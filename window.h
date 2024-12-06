@@ -1,4 +1,7 @@
 #include "screen.h"
+#include "time.h"
+#include "file.h"
+#include "colors.h"
 #include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
@@ -7,8 +10,8 @@
 #define WINDOW_H
 
 game_t Start();
-void ShowMenu(screen_t* screen);
-void ClearScreen(screen_t* screen);
-void ClearScreenT(screen_t* screen, char* text);
+int ShowMenu(const screen_t* screen);
+void ClearScreen(const screen_t* screen);
+void ClearScreenT(const screen_t* screen, const char* text);
 
 #endif //WINDOW_H

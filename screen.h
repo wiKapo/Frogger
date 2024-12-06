@@ -6,7 +6,7 @@ typedef struct {
     WINDOW *win;
     int height;
     int width;
-    int temp_background;
+    int colors;
 } screen_t;
 
 typedef struct {

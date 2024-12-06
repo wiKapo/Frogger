@@ -1,12 +1,15 @@
 #include "file.h"
+
+#include <ncurses.h>
 #include <string.h>
 #include <stdlib.h>
 
 config_t* read_config_file(const char* filename){
     FILE* file = fopen(filename, "r");
     if(file == NULL){
+        endwin();
         printf("Error opening file %s\n", filename);
-        return NULL;
+        exit(1);
     }
     config_t *config = malloc(sizeof(config_t) * 4);
 

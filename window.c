@@ -1,11 +1,12 @@
 #include "window.h"
-#include "file.h"
 
-#define MIN_WIDTH 25
+#define MIN_WIDTH 50
 #define MIN_HEIGHT 25
 
 game_t Start() {
     WINDOW *initwin = initscr();
+    StartColor();
+
     curs_set(0);
     noecho();
     refresh();
@@ -22,26 +23,28 @@ game_t Start() {
 
     //create a screen
     WINDOW *win = newwin(height, width, 0, 0);
+    int colwin = 2;
+    wbkgd(win, COLOR_PAIR(colwin));
     box(win, 0, 0);
     mvwprintw(win, 0, width / 2 - 5, "[ FROGGER ]");
     wrefresh(win);
 
-    WINDOW *status = newwin(3, width, height + 1, 0);
+    WINDOW *status = newwin(3, width, height, 0);
+    int colstatus = 1;
+    wbkgd(status, COLOR_PAIR(colstatus));
     box(status, 0, 0);
     mvwprintw(status, 1, 1, "%s %s %s", (char*)config[1].data[0], (char*)config[1].data[1], (char*)config[1].data[2]);
     mvwprintw(status, 1, 30, "ARENA Y:%d X:%d", height, width);
     wrefresh(status);
 
-    game_t game = {{win, height, width, 1}, {status, 3, width, 1}};
-
-    return game;
+    return (game_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
 }
 
-void ClearScreen(screen_t *screen) {
+void ClearScreen(const screen_t *screen) {
     ClearScreenT(screen, "");
 }
 
-void ClearScreenT(screen_t *screen, char *text) {
+void ClearScreenT(const screen_t *screen, const char *text) {
     WINDOW *win = screen->win;
     box(win, 0, 0);
     for(int i = 1; i < screen->height - 1; i++) {
@@ -55,32 +58,27 @@ void ClearScreenT(screen_t *screen, char *text) {
     wrefresh(win);
 }
 
-void ShowMenu(screen_t *screen) {
+int ShowMenu(const screen_t *screen) {
     WINDOW *win = screen->win;
-    mvwprintw(win, screen->height / 3, screen->width / 2 - 3, "FROGGER");
-    mvwprintw(win, screen->height / 3 + 1, screen->width / 2 - 10, "[1] - Start tutorial");
-    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[2] - Start normal");
-    mvwprintw(win, screen->height / 3 + 3, screen->width / 2 - 10, "[3] - Start infinite");
+    mvwprintw(win, screen->height / 3, screen->width / 2 - 10, "[1] - Start tutorial");
+    mvwprintw(win, screen->height / 3 + 1, screen->width / 2 - 10, "[2] - Start normal");
+    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[3] - Start infinite");
+    mvwprintw(win, screen->height / 3 + 4, screen->width / 2 - 10, "[q] - Quit");
     wrefresh(win);
-    char read;
     while (1) {
-        read = getch();
+        char read = getch();
         switch (read) {
-            case '1': return;
-            case '2': return;
-            case '3': return;
-            case 'q':
-                box(win, 0, 0);
-                mvwprintw(win, 3, 3, "SHUTTING DOWN");
-                timeout(5000);
-                endwin();
-                exit(0);
+            case '1': return 1;
+            case '2': return 2;
+            case '3': return 3;
+            case 'q': return 0;
+
             default: break;
         }
     }
 }
 
-void ShowStatus(screen_t *screen) {
+void ShowStatus(const screen_t *screen) {
     WINDOW *win = newwin(screen->height, screen->width, screen->height + 1, 0);
     wrefresh(win);
 }
