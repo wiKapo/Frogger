@@ -6,6 +6,6 @@ set(CMAKE_C_STANDARD 11)
 find_package(Curses REQUIRED)
 include_directories(${CURSES_INCLUDE_DIR})
 
-add_executable(Frogger main.c window.h window.c)
+add_executable(Frogger main.c window.h window.c file.c)
 
 target_link_libraries(Frogger ${CURSES_LIBRARIES})

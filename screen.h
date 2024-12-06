@@ -4,9 +4,14 @@
 
 typedef struct {
     WINDOW *win;
-    int width;
     int height;
-    int temp_color;
+    int width;
+    int temp_background;
 } screen_t;
+
+typedef struct {
+    screen_t mainwin;
+    screen_t statwin;
+} game_t;
 
 #endif //SCREEN_H

@@ -2,21 +2,16 @@
 #include "window.h"
 
 int main() {
-    initscr();
-    printw("Hello World!");
-    curs_set(0);
-    refresh();
-    noecho();
-    getch();
-
     struct timeval gametime;
     gettimeofday(&gametime, NULL);
 
     int play = 1;
-    screen_t screen = Start();
+    game_t game = Start();
+    screen_t screen = game.mainwin;
     WINDOW* win = screen.win;
 
     ShowMenu(&screen);
+    ClearScreen(&screen);
 
     while (play) {
         //frog_move();

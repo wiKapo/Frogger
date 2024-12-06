@@ -6,7 +6,8 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-screen_t Start();
+game_t Start();
 void ShowMenu(screen_t* screen);
+void ClearScreen(screen_t* screen);
 
 #endif //WINDOW_H
