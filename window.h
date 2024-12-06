@@ -9,5 +9,6 @@
 game_t Start();
 void ShowMenu(screen_t* screen);
 void ClearScreen(screen_t* screen);
+void ClearScreenT(screen_t* screen, char* text);
 
 #endif //WINDOW_H

@@ -19,8 +19,8 @@ int main() {
 
         mvwprintw(win, 2, 1, "TIME: %ld", gametime.tv_usec);
         wrefresh(win);
-        timeout(1000);
         gettimeofday(&gametime, NULL);
+        timeout(1000);
         if (getch() == 'q')
             play = 0;
     }
