@@ -10,8 +10,8 @@ typedef struct {
 } screen_t;
 
 typedef struct {
-    screen_t mainwin;
-    screen_t statwin;
+    screen_t mainscr;
+    screen_t statscr;
 } game_t;
 
 #endif //SCREEN_H

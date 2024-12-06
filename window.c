@@ -1,9 +1,9 @@
 #include "window.h"
 
 #define MIN_WIDTH 50
-#define MIN_HEIGHT 25
+#define MIN_HEIGHT 20
 
-game_t Start() {
+game_t Start(const config_t *config) {
     WINDOW *initwin = initscr();
     StartColor();
 
@@ -11,14 +11,11 @@ game_t Start() {
     noecho();
     refresh();
 
-    //read config from file
-    config_t *config = read_config_file("config.txt");
-
     int first = *(int *) config[0].data[0];
     int second = *(int *) config[0].data[1];
     int maxwidth = getmaxx(initwin), maxheight = getmaxy(initwin);
 
-    int height = first > MIN_HEIGHT && first < maxheight ? first : MIN_HEIGHT;
+    int height = first * 2 > MIN_HEIGHT && first * 2 < maxheight ? first * 2 : MIN_HEIGHT;
     int width = second > MIN_WIDTH && second < maxwidth ? second : MIN_WIDTH;
 
     //create a screen
@@ -33,8 +30,9 @@ game_t Start() {
     int colstatus = 1;
     wbkgd(status, COLOR_PAIR(colstatus));
     box(status, 0, 0);
-    mvwprintw(status, 1, 1, "%s %s %s", (char*)config[1].data[0], (char*)config[1].data[1], (char*)config[1].data[2]);
-    mvwprintw(status, 1, 30, "ARENA Y:%d X:%d", height, width);
+    mvwprintw(status, 1, 1, "%s %s %s", (char *) config[1].data[0], (char *) config[1].data[1],
+              (char *) config[1].data[2]);
+    mvwprintw(status, 1, 27, "ARENA Y:%d X:%d MH:%d", height, width, maxheight);
     wrefresh(status);
 
     return (game_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
@@ -47,8 +45,8 @@ void ClearScreen(const screen_t *screen) {
 void ClearScreenT(const screen_t *screen, const char *text) {
     WINDOW *win = screen->win;
     box(win, 0, 0);
-    for(int i = 1; i < screen->height - 1; i++) {
-        for(int j = 1; j < screen->width - 1; j++) {
+    for (int i = 1; i < screen->height - 1; i++) {
+        for (int j = 1; j < screen->width - 1; j++) {
             mvwprintw(win, i, j, " ");
         }
     }
@@ -81,4 +79,20 @@ int ShowMenu(const screen_t *screen) {
 void ShowStatus(const screen_t *screen) {
     WINDOW *win = newwin(screen->height, screen->width, screen->height + 1, 0);
     wrefresh(win);
+}
+
+void DrawGround(const screen_t screen, const ground_et *ground) {
+    WINDOW *win = screen.win;
+    int width = screen.width - 2, height = screen.height - 2;
+    char line[width];
+    for (int i = 0; i < width; i++) {
+        line[i] = ' ';
+    }
+    line[width] = '\0';
+    for (int i = 0; i < height; i++) {
+        wattron(win, COLOR_PAIR(ground[i] + 10));
+        mvwprintw(win, height - i, 1, "%s", line);
+        wattroff(win, COLOR_PAIR(ground[i] + 10));
+        wrefresh(win);
+    }
 }
