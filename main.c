@@ -11,7 +11,7 @@ int main() {
     WINDOW* win = screen.win;
 
     ShowMenu(&screen);
-    ClearScreen(&screen);
+    ClearScreenT(&screen, "[ FROGGER ]");
 
     while (play) {
         //frog_move();
