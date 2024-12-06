@@ -20,16 +20,17 @@ int main() {
         if (!state)
             play = 0;
 
+        if (state == 99) {
+            //ShowSettings()
+            continue;
+        }
+
         long starttime = GetTime();
 
         while (state) {
-            switch (state) {
-                case 1: break;
-                //
-                default: break;
-            }
-            StartGame(config, game);
+            object_t *objects = StartGame(config, game, state);
             //frog_move();
+            MoveFrog(screen, &objects[0]);
             //enemy_move();
 
 

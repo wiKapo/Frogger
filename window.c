@@ -60,7 +60,8 @@ int ShowMenu(const screen_t *screen) {
     WINDOW *win = screen->win;
     mvwprintw(win, screen->height / 3, screen->width / 2 - 10, "[1] - Start tutorial");
     mvwprintw(win, screen->height / 3 + 1, screen->width / 2 - 10, "[2] - Start normal");
-    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[3] - Start infinite");
+    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[3] - Start hard");
+    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[s] - Open settings");
     mvwprintw(win, screen->height / 3 + 4, screen->width / 2 - 10, "[q] - Quit");
     wrefresh(win);
     while (1) {
@@ -69,6 +70,7 @@ int ShowMenu(const screen_t *screen) {
             case '1': return 1;
             case '2': return 2;
             case '3': return 3;
+            case 's': return 99;
             case 'q': return 0;
 
             default: break;
@@ -94,5 +96,44 @@ void DrawGround(const screen_t screen, const ground_et *ground) {
         mvwprintw(win, height - i, 1, "%s", line);
         wattroff(win, COLOR_PAIR(ground[i] + 10));
         wrefresh(win);
+    }
+}
+
+void UpdatePosition(int height, int width, int* posy, int* posx, move_et movement);
+void MoveFrog(const screen_t screen, object_t *frog) {
+    WINDOW *win = screen.win;
+    int color = frog->colors;
+
+    int width = screen.width - 2, height = screen.height - 2;
+
+    UpdatePosition(height, width, &frog->posy, &frog->posx, UP);
+
+    int posx = frog->posx, posy = frog->posy;
+    int fwidth = frog->width, fheight = frog->height;
+    char *text = frog->text;
+
+    wattron(win, COLOR_PAIR(color));
+    for (int i = 0; i < fwidth; i++) {
+        for (int j = 0; j < fheight; j++)
+            mvwaddch(win, posy + i, posx + j, text[(i * fwidth) + j]);
+    }
+    wattroff(win, COLOR_PAIR(color));
+}
+
+void UpdatePosition(int height, int width, int* posy, int* posx, move_et movement) {
+    switch (movement) {
+        case UP:
+            if (0 < *posy && *posy < height) *posy -= 2;
+            break;
+        case DOWN:
+            if (2 < *posy && *posy < height) *posy += 2;
+            break;
+        case LEFT:
+            if (1 < *posx && *posx < width) (*posx)--;
+            break;
+        case RIGHT:
+            if (0 < *posx && *posx < width - 1) (*posx)++;
+            break;
+        default: break;
     }
 }

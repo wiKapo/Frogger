@@ -1,10 +1,10 @@
 #include "game.h"
 
-object_t* StartGame(const config_t *config, const game_t game) {
+object_t *StartGame(const config_t *config, const game_t game, int type) {
     screen_t main = game.mainscr;
     screen_t status = game.statscr;
 
-    long seed = *(long*)config[2].data[0];
+    long seed = *(long *) config[2].data[0] + type;
 
     srand(seed);
 
@@ -14,16 +14,17 @@ object_t* StartGame(const config_t *config, const game_t game) {
     //Decide what ground to draw
     for (int i = 4; i < height - 1; i += 2) {
         ground[i] = rand() % 3;
-        ground[i+1] = ground[i];
+        ground[i + 1] = ground[i];
     }
-    ground[0] = ground[1] = ground[2] = ground[3] = grass;
-    ground[height - 3] = ground[height - 2] = grass;
-    ground[height - 1] = ground[height] =  finish;
+    ground[0] = ground[1] = GRASS;
+    if (type == 1) ground[2] = ground[3] = GRASS;
+    ground[height - 3] = ground[height - 2] = GRASS;
+    ground[height - 1] = ground[height] = FINISH;
 
     DrawGround(main, ground);
 
-    object_t* objects = (object_t*)malloc(sizeof(object_t) * 2);
-    object_t frog = {height, main.width/2, 1, 1, 1, PLAYER, PLAYER};
+    object_t *objects = (object_t *) malloc(sizeof(object_t) * 2);
+    object_t frog = {height - 1, main.width / 2, 2, 2, 20, "IHHL", NONE, PLAYER};
     objects[0] = frog;
 
     return objects;

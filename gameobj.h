@@ -2,17 +2,40 @@
 #define GAMEOBJ_H
 
 typedef enum {
-    grass = 0,
-    road = 1,
-    water = 2,
-    finish = 9,
+    GRASS = 0,
+    ROAD = 1,
+    WATER = 2,
+    FINISH = 9,
 } ground_et;
 
 typedef enum {
-    player = 0,
-    car = 1,
-    log = 2,
-    stork = 3,
+    PLAYER = 0,
+    CAR = 1,
+    LOG = 2,
+    STORK = 3,
 } type_et;
+
+typedef enum {
+    NONE = 0,
+    UP = 1,
+    DOWN = 2,
+    LEFT = 3,
+    RIGHT = 4,
+    DOWNLEFT = 5,
+    DOWNRIGHT = 6,
+    UPLEFT = 7,
+    UPRIGHT = 8,
+} move_et;
+
+typedef struct {
+    int posy;
+    int posx;
+    int height;
+    int width;
+    int colors;
+    char *text;
+    move_et movement;
+    type_et type;
+} object_t;
 
 #endif //GAMEOBJ_H
