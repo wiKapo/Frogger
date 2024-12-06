@@ -1,8 +1,12 @@
+#include "screen.h"
+#include <ncurses.h>
+#include <stdlib.h>
+#include <string.h>
+
 #ifndef WINDOW_H
 #define WINDOW_H
-#include <ncurses.h>
 
-WINDOW *create_window(int width, int height);
-void destroy_window(WINDOW *window);
+screen_t Start();
+void ShowMenu(screen_t* screen);
 
 #endif //WINDOW_H
