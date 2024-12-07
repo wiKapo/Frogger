@@ -2,7 +2,7 @@
 
 game_t *StartGame(const config_t *config, const game_screen_t game_screen, int type) {
     const screen_t main = game_screen.mainscr;
-    const screen_t status = game_screen.statscr;
+    // const screen_t status = game_screen.statscr;
 
     const long seed = *(long *) config[2].data[0] + type;
     srand(seed);
@@ -12,8 +12,28 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
 
     //Decide what ground to draw
     for (int i = 4; i < height - 1; i += 2) {
-        ground[i] = rand() % 3;
-        ground[i + 1] = ground[i];
+        const int val = rand() % 100;
+        // switch (val) {
+        //     case 0 ... 44:
+        //         ground[i + 1] = ground[i] = GRASS;
+        //         break;
+        //     case 45 ... 72:
+        //         ground[i + 1] = ground[i] = ROAD;
+        //         break;
+        //     case 73 ... 99:
+        //         ground[i + 1] = ground[i] = WATER;
+        //         break;
+        //     default:
+        //         ground[i + 1] = ground[i] = GRASS;
+        // }
+        if (val < 44)
+            ground[i + 1] = ground[i] = GRASS;
+        else if (val < 72)
+            ground[i + 1] = ground[i] = ROAD;
+        else if (val < 99)
+            ground[i + 1] = ground[i] = WATER;
+        else
+            ground[i + 1] = ground[i] = GRASS;
     }
     ground[0] = ground[1] = GRASS;
     if (type == 1) ground[2] = ground[3] = GRASS;
@@ -21,7 +41,7 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
     ground[height - 1] = ground[height] = FINISH;
 
     object_t object = {};
-    const object_t frog = {height - 1, main.width / 2, 2, 2, 20, "IHHL", NONE, PLAYER};
+    const object_t frog = {height - 1, main.width / 2, 2, 2, 20, "IHHL", NONE, 1, PLAYER};
 
     game_t *g = malloc(sizeof(game_t));
     g->frog = frog;
