@@ -33,8 +33,8 @@ int main() {
 
         object_t frog = game->frog;
 
-        while (state) {
-            //frog_move();
+        ClearScreenT(mainscr, GAME_TITLE);
+        ShowCountdown(mainscr);
 
         //GAME LOOP
         while (1) {

@@ -82,6 +82,40 @@ int ShowMenu(const screen_t screen) {
     }
 }
 
+void ShowCountdown(const screen_t screen) {
+    WINDOW *win = screen.win;
+    WINDOW *countdown = subwin(win, 3, 5, screen.height / 2 - 1, screen.width / 2 - 3);
+    // WINDOW *countdown = subwin(win, 3, 5, 17, 23);
+
+    wbkgd(countdown, COLOR_PAIR(33));
+    box(countdown, 0, 0);
+    mvwaddch(countdown, 1, 2, '3');
+    wrefresh(countdown);
+    wtimeout(countdown, COUNTDOWN_TIME);
+    wgetch(countdown);
+
+    wbkgd(countdown, COLOR_PAIR(32));
+    box(countdown, 0, 0);
+    mvwaddch(countdown, 1, 2, '2');
+    wrefresh(countdown);
+    wtimeout(countdown, COUNTDOWN_TIME);
+    wgetch(countdown);
+
+    wbkgd(countdown, COLOR_PAIR(31));
+    box(countdown, 0, 0);
+    mvwaddch(countdown, 1, 2, '1');
+    wrefresh(countdown);
+    wtimeout(countdown, COUNTDOWN_TIME);
+    wgetch(countdown);
+
+    wbkgd(countdown, COLOR_PAIR(30));
+    box(countdown, 0, 0);
+    mvwaddstr(countdown, 1, 1, "GO!");
+    wrefresh(countdown);
+    wtimeout(countdown, COUNTDOWN_TIME);
+    wgetch(countdown);
+}
+
 void ShowStatus(const screen_t screen) {
     WINDOW *win = newwin(screen.height, screen.width, screen.height + 1, 0);
     wrefresh(win);

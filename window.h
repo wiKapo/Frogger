@@ -14,6 +14,7 @@
 
 game_screen_t Start(const config_t* config);
 int ShowMenu(screen_t screen);
+void ShowCountdown(screen_t screen);
 void ShowFinish(screen_t screen);
 void ClearScreen(screen_t screen);
 void ClearScreenT(screen_t screen, const char* text);
