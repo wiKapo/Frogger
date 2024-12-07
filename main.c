@@ -26,11 +26,12 @@ int main() {
         }
 
         long starttime = GetTime();
+        object_t *objects = StartGame(config, game, state);
+        object_t frog = objects[0];
 
         while (state) {
-            object_t *objects = StartGame(config, game, state);
             //frog_move();
-            MoveFrog(screen, &objects[0]);
+            MoveFrog(screen, &frog);
             //enemy_move();
 
 

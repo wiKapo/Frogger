@@ -100,33 +100,36 @@ void DrawGround(const screen_t screen, const ground_et *ground) {
 }
 
 void UpdatePosition(int height, int width, int* posy, int* posx, move_et movement);
-void MoveFrog(const screen_t screen, object_t *frog) {
+void MoveFrog(const screen_t screen, object_t* frog) {
     WINDOW *win = screen.win;
-    int color = frog->colors;
 
-    int width = screen.width - 2, height = screen.height - 2;
+    const int color = frog->colors, width = screen.width - 2, height = screen.height - 2;
 
-    UpdatePosition(height, width, &frog->posy, &frog->posx, UP);
+    UpdatePosition(height, width, &frog->posy, &frog->posx, frog->movement);
+    frog->movement = NONE;
 
-    int posx = frog->posx, posy = frog->posy;
-    int fwidth = frog->width, fheight = frog->height;
-    char *text = frog->text;
+    mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", frog->posy, screen.height, frog->posx, screen.width);
+
+    const int posx = frog->posx, posy = frog->posy;
+    const int fwidth = frog->width, fheight = frog->height;
+    const char *text = frog->text;
 
     wattron(win, COLOR_PAIR(color));
     for (int i = 0; i < fwidth; i++) {
         for (int j = 0; j < fheight; j++)
-            mvwaddch(win, posy + i, posx + j, text[(i * fwidth) + j]);
+            mvwaddch(win, posy + i + 1, posx + j, text[(i * fwidth) + j]);
     }
     wattroff(win, COLOR_PAIR(color));
 }
 
-void UpdatePosition(int height, int width, int* posy, int* posx, move_et movement) {
+void UpdatePosition(const int height, const int width, int* posy, int* posx, const move_et movement) {
     switch (movement) {
+        case NONE: break;
         case UP:
             if (0 < *posy && *posy < height) *posy -= 2;
             break;
         case DOWN:
-            if (2 < *posy && *posy < height) *posy += 2;
+            if (0 < *posy && *posy < height-2) *posy += 2;
             break;
         case LEFT:
             if (1 < *posx && *posx < width) (*posx)--;
