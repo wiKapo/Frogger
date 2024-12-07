@@ -1,7 +1,6 @@
 #include "file.h"
 #include "screen.h"
 #include "gameobj.h"
-#include "window.h"
 #include <stdlib.h>
 
 #ifndef GAME_H

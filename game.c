@@ -13,19 +13,6 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
     //Decide what ground to draw
     for (int i = 4; i < height - 1; i += 2) {
         const int val = rand() % 100;
-        // switch (val) {
-        //     case 0 ... 44:
-        //         ground[i + 1] = ground[i] = GRASS;
-        //         break;
-        //     case 45 ... 72:
-        //         ground[i + 1] = ground[i] = ROAD;
-        //         break;
-        //     case 73 ... 99:
-        //         ground[i + 1] = ground[i] = WATER;
-        //         break;
-        //     default:
-        //         ground[i + 1] = ground[i] = GRASS;
-        // }
         if (val < 44)
             ground[i + 1] = ground[i] = GRASS;
         else if (val < 72)
@@ -58,15 +45,12 @@ void UpdatePosition(screen_t screen, object_t *obj);
 void PrintObject(screen_t screen, object_t obj);
 
 void MoveFrog(const screen_t screen, object_t *frog) {
-    WINDOW *win = screen.win;
-    mvwprintw(win, 1, 1, "MOVE %d", frog->movement);
+    // WINDOW *win = screen.win;
+    // mvwprintw(win, 1, 1, "MOVE %d", frog->movement);
     UpdatePosition(screen, frog);
 
     //FROG POS DEBUG
     //mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", posy, screen.height, posx, screen.width);
-
-    if(frog->pos.posy == 0)
-        ShowFinish(screen);
 
     PrintObject(screen, *frog);
 }

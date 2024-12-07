@@ -7,7 +7,7 @@
 
 int main() {
     //read config from file
-    const config_t *config = read_config_file(CONFIG_FILENAME);
+    const config_t *config = ReadConfigFile(CONFIG_FILENAME);
 
     const game_screen_t game_screen = Start(config);
     const screen_t mainscr = game_screen.mainscr;
@@ -22,9 +22,13 @@ int main() {
         ClearScreenT(mainscr, GAME_TITLE);
 
         if(!play) break;
+        if (play == 80) {
+            //ShowLeaderboard();
+            continue;
+        }
         if (play == 99) {
-            //ShowSettings()
-            config = read_config_file(CONFIG_FILENAME);
+            //ShowSettings();
+            config = ReadConfigFile(CONFIG_FILENAME);
             continue;
         }
 
@@ -55,6 +59,11 @@ int main() {
             //CheckCollision();
 
             long gametime = GetTime() - starttime;
+
+            if(frog.pos.posy == 0) {
+                ShowFinish(mainscr, config, gametime);
+                break;
+            }
 
             mvwprintw(mainwin, 0, mainscr.width - 12, "[%02ld:%02ld.%02ld]",
                       gametime / 1000 / 60,

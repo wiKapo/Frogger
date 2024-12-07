@@ -8,6 +8,7 @@ typedef struct {
   void** data;
 } config_t;
 
-config_t* read_config_file(const char* filename);
+config_t* ReadConfigFile(const char* filename);
+void SaveScore(const config_t *config, long score);
 
 #endif //FILE_H

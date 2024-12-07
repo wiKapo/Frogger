@@ -36,7 +36,7 @@ game_screen_t Start(const config_t *config) {
     box(status, 0, 0);
     mvwprintw(status, 1, 1, "%s %s %s", (char *) config[1].data[0], (char *) config[1].data[1],
               (char *) config[1].data[2]);
-    mvwprintw(status, 1, 27, "ARENA Y:%d X:%d MH:%d", height, width, maxheight);
+    //mvwprintw(status, 1, 27, "ARENA Y:%d X:%d MH:%d", height, width, maxheight);
     wrefresh(status);
 
     return (game_screen_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
@@ -65,8 +65,9 @@ int ShowMenu(const screen_t screen) {
     mvwprintw(win, screen.height / 3, screen.width / 2 - 10, "[1] - Start tutorial");
     mvwprintw(win, screen.height / 3 + 1, screen.width / 2 - 10, "[2] - Start normal");
     mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "[3] - Start hard");
-    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "[s] - Open settings");
-    mvwprintw(win, screen.height / 3 + 4, screen.width / 2 - 10, "[q] - Quit");
+    mvwprintw(win, screen.height / 3 + 3, screen.width / 2 - 10, "[s] - Open settings");
+    mvwprintw(win, screen.height / 3 + 4, screen.width / 2 - 10, "[l] - Open leaderboard");
+    mvwprintw(win, screen.height / 3 + 6, screen.width / 2 - 10, "[q] - Quit");
     wrefresh(win);
     while (1) {
         const char read = getch();
@@ -75,6 +76,7 @@ int ShowMenu(const screen_t screen) {
             case '2': return 2;
             case '3': return 3;
             case 's': return 99;
+            case 'l': return 80;
             case 'q': return 0;
 
             default: break;
@@ -141,5 +143,22 @@ void DrawGround(const screen_t screen, const ground_et *ground) {
     }
 }
 
-void ShowFinish(const screen_t screen) {
+void ShowFinish(const screen_t screen, const config_t *config, const long time) {
+    WINDOW *win = screen.win;
+    ClearScreenT(screen, GAME_TITLE);
+
+    mvwprintw(win, screen.height / 3, screen.width / 2 - 6, "You win");
+    mvwprintw(win, screen.height / 3 + 1, screen.width / 2 - 10, "Your score: %02ld:%02ld.%02ld",
+              time / 1000 / 60, (time / 1000) % 60, time % 1000);
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save to file? [y/n]");
+    wrefresh(win);
+    while (1) {
+        if (getch() == 'y') {
+            SaveScore(config, time);
+            break;
+        }
+        if (getch() == 'n') {
+            break;
+        }
+    }
 }
