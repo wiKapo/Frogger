@@ -29,6 +29,6 @@ void StartColor() {
     init_pair(12, COLOR_WHITE, COLOR_CYAN); //WATER
     init_pair(19, COLOR_WHITE, COLOR_RED); //FINISH
 
-    //colors for objects
+    //COLORS FOR OBJECTS
     init_pair(20, COLOR_GREEN, COLOR_DARKER_GREEN); //FROG
 }

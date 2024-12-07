@@ -7,14 +7,16 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define GAME_TITLE          "[ FROGGER ]"
+
 #ifndef WINDOW_H
 #define WINDOW_H
 
 game_screen_t Start(const config_t* config);
-int ShowMenu(const screen_t* screen);
-void ClearScreen(const screen_t* screen);
-void ClearScreenT(const screen_t* screen, const char* text);
-void DrawGround(const screen_t screen, const ground_et* ground);
-void MoveFrog(const screen_t screen, object_t* frog);
+int ShowMenu(screen_t screen);
+void ShowFinish(screen_t screen);
+void ClearScreen(screen_t screen);
+void ClearScreenT(screen_t screen, const char* text);
+void DrawGround(screen_t screen, const ground_et* ground);
 
 #endif //WINDOW_H

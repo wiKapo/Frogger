@@ -3,6 +3,8 @@
 #define MIN_WIDTH 50
 #define MIN_HEIGHT 20
 
+#define COUNTDOWN_TIME  500
+
 game_screen_t Start(const config_t *config) {
     WINDOW *initwin = initscr();
     StartColor();
@@ -18,14 +20,16 @@ game_screen_t Start(const config_t *config) {
     int height = first * 2 > MIN_HEIGHT && first * 2 < maxheight ? first * 2 : MIN_HEIGHT;
     int width = second > MIN_WIDTH && second < maxwidth ? second : MIN_WIDTH;
 
-    //create a screen
+    //create main screen
     WINDOW *win = newwin(height, width, 0, 0);
+    keypad(win, TRUE);
     int colwin = 2;
     wbkgd(win, COLOR_PAIR(colwin));
     box(win, 0, 0);
-    mvwprintw(win, 0, width / 2 - 5, "[ FROGGER ]");
+    mvwprintw(win, 0, width / 2 - 5, GAME_TITLE);
     wrefresh(win);
 
+    //create status screen
     WINDOW *status = newwin(3, width, height, 0);
     int colstatus = 1;
     wbkgd(status, COLOR_PAIR(colstatus));
@@ -38,34 +42,34 @@ game_screen_t Start(const config_t *config) {
     return (game_screen_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
 }
 
-void ClearScreen(const screen_t *screen) {
+void ClearScreen(const screen_t screen) {
     ClearScreenT(screen, "");
 }
 
-void ClearScreenT(const screen_t *screen, const char *text) {
-    WINDOW *win = screen->win;
+void ClearScreenT(const screen_t screen, const char *text) {
+    WINDOW *win = screen.win;
     box(win, 0, 0);
-    for (int i = 1; i < screen->height - 1; i++) {
-        for (int j = 1; j < screen->width - 1; j++) {
+    for (int i = 1; i < screen.height - 1; i++) {
+        for (int j = 1; j < screen.width - 1; j++) {
             mvwprintw(win, i, j, " ");
         }
     }
     if (text != "") {
-        mvwprintw(win, 0, screen->width / 2 - (strlen(text) / 2), text);
+        mvwprintw(win, 0, screen.width / 2 - (strlen(text) / 2), text);
     }
     wrefresh(win);
 }
 
-int ShowMenu(const screen_t *screen) {
-    WINDOW *win = screen->win;
-    mvwprintw(win, screen->height / 3, screen->width / 2 - 10, "[1] - Start tutorial");
-    mvwprintw(win, screen->height / 3 + 1, screen->width / 2 - 10, "[2] - Start normal");
-    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[3] - Start hard");
-    mvwprintw(win, screen->height / 3 + 2, screen->width / 2 - 10, "[s] - Open settings");
-    mvwprintw(win, screen->height / 3 + 4, screen->width / 2 - 10, "[q] - Quit");
+int ShowMenu(const screen_t screen) {
+    WINDOW *win = screen.win;
+    mvwprintw(win, screen.height / 3, screen.width / 2 - 10, "[1] - Start tutorial");
+    mvwprintw(win, screen.height / 3 + 1, screen.width / 2 - 10, "[2] - Start normal");
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "[3] - Start hard");
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "[s] - Open settings");
+    mvwprintw(win, screen.height / 3 + 4, screen.width / 2 - 10, "[q] - Quit");
     wrefresh(win);
     while (1) {
-        char read = getch();
+        const char read = getch();
         switch (read) {
             case '1': return 1;
             case '2': return 2;
@@ -78,8 +82,8 @@ int ShowMenu(const screen_t *screen) {
     }
 }
 
-void ShowStatus(const screen_t *screen) {
-    WINDOW *win = newwin(screen->height, screen->width, screen->height + 1, 0);
+void ShowStatus(const screen_t screen) {
+    WINDOW *win = newwin(screen.height, screen.width, screen.height + 1, 0);
     wrefresh(win);
 }
 
@@ -103,46 +107,5 @@ void DrawGround(const screen_t screen, const ground_et *ground) {
     }
 }
 
-void UpdatePosition(int height, int width, int* posy, int* posx, move_et movement);
-void MoveFrog(const screen_t screen, object_t* frog) {
-    WINDOW *win = screen.win;
-
-    const int color = frog->colors, width = screen.width - 2, height = screen.height - 2;
-    const int posx = frog->pos.posx, posy = frog->pos.posy;
-    const int fwidth = frog->pos.width, fheight = frog->pos.height;
-
-    //frog->movement = CaptureInput();
-    UpdatePosition(height, width, &frog->pos.posy, &frog->pos.posx, frog->movement);
-    frog->movement = NONE;
-
-    //FROG POS DEBUG
-    //mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", posy, screen.height, posx, screen.width);
-
-    const char *text = frog->text;
-
-    wattron(win, COLOR_PAIR(color));
-    for (int i = 0; i < fwidth; i++) {
-        for (int j = 0; j < fheight; j++)
-            mvwaddch(win, posy + i + 1, posx + j, text[(i * fwidth) + j]);
-    }
-    wattroff(win, COLOR_PAIR(color));
-}
-
-void UpdatePosition(const int height, const int width, int* posy, int* posx, const move_et movement) {
-    switch (movement) {
-        case NONE: break;
-        case UP:
-            if (0 < *posy && *posy < height) *posy -= 2;
-            break;
-        case DOWN:
-            if (0 < *posy && *posy < height-2) *posy += 2;
-            break;
-        case LEFT:
-            if (1 < *posx && *posx < width) (*posx)--;
-            break;
-        case RIGHT:
-            if (0 < *posx && *posx < width - 1) (*posx)++;
-            break;
-        default: break;
-    }
+void ShowFinish(const screen_t screen) {
 }
