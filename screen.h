@@ -12,6 +12,6 @@ typedef struct {
 typedef struct {
     screen_t mainscr;
     screen_t statscr;
-} game_t;
+} game_screen_t;
 
 #endif //SCREEN_H

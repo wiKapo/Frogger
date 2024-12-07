@@ -32,10 +32,22 @@ typedef struct {
     int posx;
     int height;
     int width;
+} pos_t;
+
+typedef struct {
+    pos_t pos;
     int colors;
     char *text;
     move_et movement;
     type_et type;
 } object_t;
+
+typedef struct {
+    object_t frog;
+    object_t car;
+    object_t log;
+    object_t stork;
+    ground_et* ground;
+} game_t;
 
 #endif //GAMEOBJ_H

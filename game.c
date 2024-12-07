@@ -1,15 +1,14 @@
 #include "game.h"
 
-object_t *StartGame(const config_t *config, const game_t game, int type) {
-    screen_t main = game.mainscr;
-    screen_t status = game.statscr;
+game_t *StartGame(const config_t *config, const game_screen_t game_screen, int type) {
+    const screen_t main = game_screen.mainscr;
+    const screen_t status = game_screen.statscr;
 
-    long seed = *(long *) config[2].data[0] + type;
-
+    const long seed = *(long *) config[2].data[0] + type;
     srand(seed);
 
-    int height = main.height - 1 - 2;
-    ground_et ground[height];
+    const int height = main.height - 1 - 2;
+    ground_et *ground = malloc(sizeof(ground_et) * height);
 
     //Decide what ground to draw
     for (int i = 4; i < height - 1; i += 2) {
@@ -21,11 +20,15 @@ object_t *StartGame(const config_t *config, const game_t game, int type) {
     ground[height - 3] = ground[height - 2] = GRASS;
     ground[height - 1] = ground[height] = FINISH;
 
-    DrawGround(main, ground);
+    object_t object = {};
+    const object_t frog = {height - 1, main.width / 2, 2, 2, 20, "IHHL", NONE, PLAYER};
 
-    object_t *objects = (object_t *) malloc(sizeof(object_t) * 2);
-    object_t frog = {height - 1, main.width / 2, 2, 2, 20, "IHHL", NONE, PLAYER};
-    objects[0] = frog;
+    game_t *g = malloc(sizeof(game_t));
+    g->frog  = frog;
+    g->car = object; //TODO car
+    g->log = object; //TODO log
+    g->stork = object; //TODO stork
+    g->ground = ground;
 
-    return objects;
+    return g;
 }

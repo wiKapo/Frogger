@@ -2,42 +2,48 @@
 #include "window.h"
 #include "game.h"
 
+#define CONFIG_FILENAME     "config.txt"
+
 int main() {
     //read config from file
-    config_t *config = read_config_file("config.txt");
+    config_t *config = read_config_file(CONFIG_FILENAME);
 
-    game_t game = Start(config);
-    screen_t screen = game.mainscr;
-    WINDOW *win = screen.win;
+    const game_screen_t game_screen = Start(config);
+    screen_t mainscr = game_screen.mainscr;
+    WINDOW *win = mainscr.win;
 
     int play = 1;
 
     while (play) {
-        ClearScreenT(&screen, "[ FROGGER ]");
-        int state = ShowMenu(&screen);
-        ClearScreenT(&screen, "[ FROGGER ]");
+        ClearScreenT(&mainscr, "[ FROGGER ]");
+        int state = ShowMenu(&mainscr);
+        ClearScreenT(&mainscr, "[ FROGGER ]");
 
         if (!state)
             play = 0;
 
         if (state == 99) {
             //ShowSettings()
+            config = read_config_file(CONFIG_FILENAME);
             continue;
         }
 
         long starttime = GetTime();
-        object_t *objects = StartGame(config, game, state);
-        object_t frog = objects[0];
+        const game_t *game = StartGame(config, game_screen, state);
+
+        DrawGround(mainscr, game->ground);
+
+        object_t frog = game->frog;
 
         while (state) {
             //frog_move();
-            MoveFrog(screen, &frog);
+            MoveFrog(mainscr, &frog);
             //enemy_move();
 
 
             long gametime = GetTime() - starttime;
 
-            mvwprintw(win, 0, screen.width - 12, "[%02ld:%02ld.%02ld]",
+            mvwprintw(win, 0, mainscr.width - 12, "[%02ld:%02ld.%02ld]",
                       gametime / 1000 / 60,
                       (gametime / 1000) % 60,
                       gametime % 1000);

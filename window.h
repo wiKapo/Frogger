@@ -10,7 +10,7 @@
 #ifndef WINDOW_H
 #define WINDOW_H
 
-game_t Start(const config_t* config);
+game_screen_t Start(const config_t* config);
 int ShowMenu(const screen_t* screen);
 void ClearScreen(const screen_t* screen);
 void ClearScreenT(const screen_t* screen, const char* text);

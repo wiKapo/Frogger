@@ -3,7 +3,7 @@
 #define MIN_WIDTH 50
 #define MIN_HEIGHT 20
 
-game_t Start(const config_t *config) {
+game_screen_t Start(const config_t *config) {
     WINDOW *initwin = initscr();
     StartColor();
 
@@ -35,7 +35,7 @@ game_t Start(const config_t *config) {
     mvwprintw(status, 1, 27, "ARENA Y:%d X:%d MH:%d", height, width, maxheight);
     wrefresh(status);
 
-    return (game_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
+    return (game_screen_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
 }
 
 void ClearScreen(const screen_t *screen) {
@@ -85,6 +85,10 @@ void ShowStatus(const screen_t *screen) {
 
 void DrawGround(const screen_t screen, const ground_et *ground) {
     WINDOW *win = screen.win;
+    for(int i = 0; i < screen.height - 2; i++) {
+        mvwprintw(win, screen.height - i - 2, 0, "%d", ground[i]);
+    }
+
     int width = screen.width - 2, height = screen.height - 2;
     char line[width];
     for (int i = 0; i < width; i++) {
@@ -104,14 +108,16 @@ void MoveFrog(const screen_t screen, object_t* frog) {
     WINDOW *win = screen.win;
 
     const int color = frog->colors, width = screen.width - 2, height = screen.height - 2;
+    const int posx = frog->pos.posx, posy = frog->pos.posy;
+    const int fwidth = frog->pos.width, fheight = frog->pos.height;
 
-    UpdatePosition(height, width, &frog->posy, &frog->posx, frog->movement);
+    //frog->movement = CaptureInput();
+    UpdatePosition(height, width, &frog->pos.posy, &frog->pos.posx, frog->movement);
     frog->movement = NONE;
 
-    mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", frog->posy, screen.height, frog->posx, screen.width);
+    //FROG POS DEBUG
+    //mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", posy, screen.height, posx, screen.width);
 
-    const int posx = frog->posx, posy = frog->posy;
-    const int fwidth = frog->width, fheight = frog->height;
     const char *text = frog->text;
 
     wattron(win, COLOR_PAIR(color));
