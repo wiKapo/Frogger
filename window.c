@@ -85,9 +85,9 @@ void ShowStatus(const screen_t *screen) {
 
 void DrawGround(const screen_t screen, const ground_et *ground) {
     WINDOW *win = screen.win;
-    for(int i = 0; i < screen.height - 2; i++) {
-        mvwprintw(win, screen.height - i - 2, 0, "%d", ground[i]);
-    }
+    //GROUND TYPE DEBUG
+    // for(int i = 0; i < screen.height - 2; i++)
+    //     mvwprintw(win, screen.height - i - 2, 0, "%d", ground[i]);
 
     int width = screen.width - 2, height = screen.height - 2;
     char line[width];

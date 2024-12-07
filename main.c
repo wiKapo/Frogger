@@ -3,6 +3,7 @@
 #include "game.h"
 
 #define CONFIG_FILENAME     "config.txt"
+#define GAME_TITLE          "[ FROGGER ]"
 
 int main() {
     //read config from file
@@ -15,9 +16,9 @@ int main() {
     int play = 1;
 
     while (play) {
-        ClearScreenT(&mainscr, "[ FROGGER ]");
+        ClearScreenT(&mainscr, GAME_TITLE);
         int state = ShowMenu(&mainscr);
-        ClearScreenT(&mainscr, "[ FROGGER ]");
+        ClearScreenT(&mainscr, GAME_TITLE);
 
         if (!state)
             play = 0;
