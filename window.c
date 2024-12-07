@@ -89,7 +89,7 @@ void ShowCountdown(const screen_t screen) {
 
     wbkgd(countdown, COLOR_PAIR(33));
     box(countdown, 0, 0);
-    mvwaddch(countdown, 1, 2, '3');
+    mvwaddstr(countdown, 1, 1, " 3 ");
     wrefresh(countdown);
     wtimeout(countdown, COUNTDOWN_TIME);
     wgetch(countdown);

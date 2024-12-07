@@ -21,25 +21,27 @@ int main() {
         int play = ShowMenu(mainscr);
         ClearScreenT(mainscr, GAME_TITLE);
 
-        if (!play) break;
+        if(!play) break;
         if (play == 99) {
             //ShowSettings()
             config = read_config_file(CONFIG_FILENAME);
             continue;
         }
 
-        const long starttime = GetTime();
         const game_t *game = StartGame(config, game_screen, play);
 
         object_t frog = game->frog;
 
         ClearScreenT(mainscr, GAME_TITLE);
+
+        DrawGround(mainscr, game->ground);
         ShowCountdown(mainscr);
 
+        const long starttime = GetTime();
         //GAME LOOP
         while (1) {
             // timeout(0);
-            wtimeout(mainwin, 1000 / FPS);
+            wtimeout(mainwin, 1000/FPS);
             int input = wgetch(mainwin);
             if (input == 'q') break;
 
