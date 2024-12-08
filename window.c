@@ -181,12 +181,24 @@ void ShowFinish(const screen_t screen, const config_t *config, const long time) 
     }
 }
 
-void ShowFail(const screen_t screen, const config_t *config) {
+int ShowFail(const screen_t screen, const config_t *config) {
     WINDOW *win = screen.win;
 
     wattron(win, COLOR_PAIR(41));
     mvwprintw(win, screen.height / 3, screen.width / 2 - 6, "You lose");
     wattroff(win, COLOR_PAIR(41));
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Try again? [y/n]");
+    wrefresh(win);
+    while (1) {
+        char c = getch();
+        if (c == 'y')
+            return 1;
+        if (c == 'n')
+            break;
+        if (c == 'q')
+            return 0;
+    }
+
     mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]");
     wrefresh(win);
     while (1) {
@@ -195,8 +207,7 @@ void ShowFail(const screen_t screen, const config_t *config) {
             // SaveReplay();
             break;
         }
-        if (c == 'n' || c == 'q') {
+        if (c == 'n' || c == 'q')
             break;
-        }
     }
 }

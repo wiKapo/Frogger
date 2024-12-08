@@ -3,9 +3,9 @@
 #include "game.h"
 
 #define CONFIG_FILENAME     "config.txt"
-#define FPS                 30
+#define FPS                 10
 
-void GameLoop(game_screen_t game_screen, const game_t *game, const config_t *config);
+int GameLoop(game_screen_t game_screen, const game_t *game, const config_t *config);
 
 int main() {
     //read config from file
@@ -15,22 +15,25 @@ int main() {
     const screen_t mainscr = game_screen.mainscr;
     const screen_t gamescr = game_screen.gamescr;
     const screen_t statscr = game_screen.statscr;
-
+    game_state_et play = EXIT;
+    int retry = 0;
     //MAIN LOOP
     while (1) {
-        ClearScreenT(mainscr, GAME_TITLE);
-        const game_state_et play = ShowMenu(mainscr);
-        ClearScreenT(mainscr, GAME_TITLE);
+        if(!retry) {
+            ClearScreenT(mainscr, GAME_TITLE);
+            play = ShowMenu(mainscr);
+            ClearScreenT(mainscr, GAME_TITLE);
 
-        if (play == EXIT) break;
-        if (play == LEADERBOARD) {
-            //ShowLeaderboard();
-            continue;
-        }
-        if (play == SETTINGS) {
-            //ShowSettings();
-            config = ReadConfigFile(CONFIG_FILENAME);
-            continue;
+            if (play == EXIT) break;
+            if (play == LEADERBOARD) {
+                //ShowLeaderboard();
+                continue;
+            }
+            if (play == SETTINGS) {
+                //ShowSettings();
+                config = ReadConfigFile(CONFIG_FILENAME);
+                continue;
+            }
         }
         const game_t *game = StartGame(config, game_screen, play);
 
@@ -40,13 +43,13 @@ int main() {
         ShowCountdown(mainscr);
 
         //GAME LOOP
-        GameLoop(game_screen, game, config);
+        retry = GameLoop(game_screen, game, config);
     }
     endwin();
     return 0;
 }
 
-void GameLoop(const game_screen_t game_screen, const game_t *game, const config_t *config) {
+int GameLoop(const game_screen_t game_screen, const game_t *game, const config_t *config) {
     const screen_t mainscr = game_screen.mainscr;
     WINDOW *mainwin = mainscr.win;
     const screen_t gamescr = game_screen.gamescr;
@@ -69,7 +72,8 @@ void GameLoop(const game_screen_t game_screen, const game_t *game, const config_
         //MoveStork();
         if (CheckCollision(frog, cars)) {
             ClearScreenT(mainscr, GAME_TITLE);
-            ShowFail(gamescr, config);
+            if (ShowFail(gamescr, config))
+                return 1;
             break;
         }
 
@@ -88,4 +92,5 @@ void GameLoop(const game_screen_t game_screen, const game_t *game, const config_
                   gametime % 1000);
         wrefresh(mainwin);
     }
+    return 0;
 }
