@@ -99,29 +99,29 @@ void ShowCountdown(const screen_t screen) {
     box(countdown, 0, 0);
     mvwaddstr(countdown, 1, 1, " 3 ");
     wrefresh(countdown);
-    wtimeout(countdown, COUNTDOWN_TIME);
-    wgetch(countdown);
+    timeout(COUNTDOWN_TIME);
+    getch();
 
     wbkgd(countdown, COLOR_PAIR(32));
     box(countdown, 0, 0);
     mvwaddch(countdown, 1, 2, '2');
     wrefresh(countdown);
-    wtimeout(countdown, COUNTDOWN_TIME);
-    wgetch(countdown);
+    timeout(COUNTDOWN_TIME);
+    getch();
 
     wbkgd(countdown, COLOR_PAIR(31));
     box(countdown, 0, 0);
     mvwaddch(countdown, 1, 2, '1');
     wrefresh(countdown);
-    wtimeout(countdown, COUNTDOWN_TIME);
-    wgetch(countdown);
+    timeout(COUNTDOWN_TIME);
+    getch();
 
     wbkgd(countdown, COLOR_PAIR(30));
     box(countdown, 0, 0);
     mvwaddstr(countdown, 1, 1, "GO!");
     wrefresh(countdown);
-    wtimeout(countdown, COUNTDOWN_TIME);
-    wgetch(countdown);
+    timeout(COUNTDOWN_TIME);
+    getch();
 }
 
 void ShowStatus(const screen_t screen) {
@@ -168,7 +168,8 @@ void ShowFinish(const screen_t screen, const config_t *config, const long time) 
             break;
         }
     }
-    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]");
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]        ");
+    wrefresh(win);
     while (1) {
         char c = getch();
         if (c == 'y') {
@@ -199,7 +200,7 @@ int ShowFail(const screen_t screen, const config_t *config) {
             return 0;
     }
 
-    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]");
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]   ");
     wrefresh(win);
     while (1) {
         char c = getch();
