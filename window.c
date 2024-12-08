@@ -153,11 +153,12 @@ void ShowFinish(const screen_t screen, const config_t *config, const long time) 
     mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save to file? [y/n]");
     wrefresh(win);
     while (1) {
-        if (getch() == 'y') {
+        char c = getch();
+        if (c == 'y') {
             SaveScore(config, time);
             break;
         }
-        if (getch() == 'n') {
+        if (c == 'n') {
             break;
         }
     }
