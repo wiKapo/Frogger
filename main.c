@@ -13,7 +13,8 @@ int main() {
 
     const game_screen_t game_screen = Start(config);
     const screen_t mainscr = game_screen.mainscr;
-    const screen_t groundscr = game_screen.groundscr;
+    const screen_t gamescr = game_screen.gamescr;
+    const screen_t statscr = game_screen.statscr;
 
     //MAIN LOOP
     while (1) {
@@ -35,7 +36,7 @@ int main() {
 
         ClearScreenT(mainscr, GAME_TITLE);
 
-        DrawGround(groundscr, game->ground);
+        DrawGround(gamescr, game->ground);
         ShowCountdown(mainscr);
 
         //GAME LOOP
@@ -61,7 +62,8 @@ void GameLoop(const game_screen_t game_screen, const game_t *game, const config_
         int input = wgetch(gamewin);
         if (input == 'q') break;
 
-        DrawGround(groundscr, game->ground);
+        wclear(gamewin);
+        DrawGround(gamescr, game->ground);
         frog.data->movement = IntToMove(input);
         MoveFrog(gamescr, frog);
         MoveCar(gamescr, cars);

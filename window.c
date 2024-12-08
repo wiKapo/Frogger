@@ -28,9 +28,6 @@ game_screen_t Start(const config_t *config) {
     mvwprintw(mainwin, 0, width / 2 - 5, GAME_TITLE);
     wrefresh(mainwin);
 
-    //create ground screen
-    WINDOW *groundwin = subwin(mainwin, height - 2, width - 2, 1, 1);
-
     //create game screen
     WINDOW *gamewin = subwin(mainwin, height - 2, width - 2, 1, 1);
     keypad(gamewin, TRUE);
@@ -47,7 +44,6 @@ game_screen_t Start(const config_t *config) {
 
     return (game_screen_t){
         {mainwin, height, width, colwin},
-        {groundwin, height - 2, width - 2, colwin},
         {gamewin, height - 2, width - 2, colwin},
         {status, 3, width, colstatus}
     };
