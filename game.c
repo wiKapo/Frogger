@@ -230,6 +230,6 @@ object_t GenerateObject(const screen_t screen, const ground_et *ground, const ty
             direction[line], speed[line],
         };
     }
-    // free(data);
+    free(data);
     return (object_t){data, objamount, colors, text, type};
 }
