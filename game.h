@@ -16,11 +16,11 @@ typedef enum {
 
 game_t *StartGame(const config_t *config, game_screen_t game_screen, int type);
 
-void MoveFrog(screen_t screen, object_t frog);
+void MoveFrog(screen_t screen, frog_t *frog);
 
 void MoveCar(screen_t screen, object_t car);
 
-int CheckCollision(object_t frog, object_t obj);
+int CheckCollision(frog_t frog, object_t obj);
 
 move_et IntToMove(int input);
 

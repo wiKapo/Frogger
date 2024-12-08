@@ -16,7 +16,7 @@ typedef enum {
 } type_et;
 
 typedef enum {
-    NONE = 0,
+    STILL = 0,
     UP = 1,
     DOWN = 2,
     LEFT = 3,
@@ -45,11 +45,25 @@ typedef struct {
 } object_t;
 
 typedef struct {
-    object_t frog;
+    data_t data;
+    int colors;
+    char *text;
+    long timeout;
+    type_et type;
+} frog_t;
+
+typedef struct {
+    data_t *data;
+    int amount;
+    char *text;
+} static_obj_t;
+
+typedef struct {
+    frog_t frog;
     object_t car;
     object_t log;
     object_t stork;
-    object_t *obstacle;
+    static_obj_t obstacle;
     ground_et *ground;
 } game_t;
 

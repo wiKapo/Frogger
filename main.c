@@ -5,7 +5,7 @@
 #define CONFIG_FILENAME     "config.txt"
 #define FPS                 10
 
-int GameLoop(game_screen_t game_screen, const game_t *game, const config_t *config);
+int GameLoop(game_screen_t game_screen, game_t *game, const config_t *config);
 
 int main() {
     //read config from file
@@ -35,7 +35,7 @@ int main() {
                 continue;
             }
         }
-        const game_t *game = StartGame(config, game_screen, play);
+        game_t *game = StartGame(config, game_screen, play);
 
         ClearScreenT(mainscr, GAME_TITLE);
 
@@ -49,13 +49,13 @@ int main() {
     return 0;
 }
 
-int GameLoop(const game_screen_t game_screen, const game_t *game, const config_t *config) {
+int GameLoop(const game_screen_t game_screen, game_t *game, const config_t *config) {
     const screen_t mainscr = game_screen.mainscr;
     WINDOW *mainwin = mainscr.win;
     const screen_t gamescr = game_screen.gamescr;
     WINDOW *gamewin = gamescr.win;
 
-    const object_t frog = game->frog;
+    frog_t *frog = &game->frog;
     const object_t cars = game->car;
 
     const long starttime = GetTime();
@@ -63,14 +63,14 @@ int GameLoop(const game_screen_t game_screen, const game_t *game, const config_t
         timeout(1000 / FPS);
         int input = getch();
         if (input == 'q') break;
-        frog.data->movement = IntToMove(input);
+        frog->data.movement = IntToMove(input);
 
         DrawGround(gamescr, game->ground);
         MoveFrog(gamescr, frog);
         MoveCar(gamescr, cars);
         //MoveLog();
         //MoveStork();
-        if (CheckCollision(frog, cars)) {
+        if (CheckCollision(*frog, cars)) {
             ClearScreenT(mainscr, GAME_TITLE);
             if (ShowFail(gamescr, config))
                 return 1;
@@ -79,7 +79,7 @@ int GameLoop(const game_screen_t game_screen, const game_t *game, const config_t
 
         long gametime = GetTime() - starttime;
 
-        if (frog.data->posy == 0) {
+        if (frog->data.posy == 0) {
             ClearScreenT(mainscr, GAME_TITLE);
             ShowFinish(gamescr, config, gametime);
             break;

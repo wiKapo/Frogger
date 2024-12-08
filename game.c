@@ -34,31 +34,35 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
     ground[height - 1] = ground[height] = FINISH;
 
     object_t empty_object = {};
-
-    data_t *frogdata = malloc(sizeof(data_t));
-    frogdata[0] = (data_t){height - 1, (float) mainscr.width / 2, 2, 2, NONE, 1};
-    const object_t frog = (object_t){frogdata, 1, 20, "IHHL", FROG};
+    const frog_t frog = (frog_t){
+        {
+            height - 1, (float) mainscr.width / 2,
+            2, 2,
+            STILL, 1
+        },
+        20, "IHHL", 0, FROG
+    };
 
     game_t *g = malloc(sizeof(game_t));
     g->frog = frog;
     g->car = GenerateObject(mainscr, ground, CAR);
     g->log = empty_object; //TODO log
     g->stork = empty_object; //TODO stork
-    g->obstacle = &empty_object; //TODO obstacle
+    g->obstacle = (static_obj_t){}; //TODO obstacle
     g->ground = ground;
 
     return g;
 }
 
-void MoveFrog(const screen_t screen, const object_t frog) {
-    UpdatePosition(screen, frog.data, FROG);
+void MoveFrog(const screen_t screen, frog_t *frog) {
+    UpdatePosition(screen, &frog->data, FROG);
 
     //FROG POS DEBUG
     // WINDOW *win = screen.win;
     // mvwprintw(win, 1, 1, "MOVE %d", frog->data->movement);
     // mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", frog.data->posy, screen.height, frog.data->posx, screen.width);
 
-    PrintObject(screen, frog);
+    PrintObject(screen, (object_t){&frog->data, 1, frog->colors, frog->text, frog->type});
 }
 
 void MoveCar(const screen_t screen, const object_t car) {
@@ -75,11 +79,11 @@ void MoveCar(const screen_t screen, const object_t car) {
     }
 }
 
-int CheckCollision(object_t frog, object_t obj) {
-    const int posy = frog.data->posy;
-    const float posx = frog.data->posx;
-    const int height = frog.data->height - 1;
-    const float width = (float) frog.data->width;
+int CheckCollision(frog_t frog, object_t obj) {
+    const int posy = frog.data.posy;
+    const float posx = frog.data.posx;
+    const int height = frog.data.height - 1;
+    const float width = (float) frog.data.width;
 
     for (int i = 0; i < obj.amount; i++) {
         int obj_posy = obj.data[i].posy;
@@ -124,7 +128,7 @@ move_et IntToMove(int input) {
         case 'l':
             move = RIGHT;
             break;
-        default: move = NONE;
+        default: move = STILL;
     }
     return move;
 }
@@ -189,7 +193,7 @@ void UpdatePosition(const screen_t screen, data_t *data, const type_et type) {
     const move_et movement = data->movement;
 
     switch (movement) {
-        case NONE: break;
+        case STILL: break;
         case UP:
             if (0 < *posy && *posy < height - 1) (*posy)--;
             break;

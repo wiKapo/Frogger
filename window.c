@@ -210,4 +210,5 @@ int ShowFail(const screen_t screen, const config_t *config) {
         if (c == 'n' || c == 'q')
             break;
     }
+    return 0;
 }
