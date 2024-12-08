@@ -21,6 +21,8 @@ game_t *StartGame(const config_t *config, game_screen_t game_screen, int type);
 
 void AddObjects(screen_t screen, const ground_et *ground, object_t *object);
 
+void DrawObstacle(screen_t screen, static_object_t static_object);
+
 void MoveFrog(screen_t screen, frog_t *frog);
 
 void MoveCar(screen_t screen, object_t *car);

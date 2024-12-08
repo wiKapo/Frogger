@@ -2,6 +2,8 @@
 
 int CheckSide(data_t test, int width, object_t *search);
 
+void AddStaticObject(screen_t screen, const ground_et *ground, static_object_t *object);
+
 void FrogUpdatePosition(screen_t screen, frog_t *frog);
 
 void UpdatePosition(screen_t screen, data_t *data, int objheight, int objwidth, type_et type);
@@ -49,12 +51,15 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
     AddObjects(mainscr, ground, &car);
     AddObjects(mainscr, ground, &log);
 
+    static_object_t tree = (static_object_t){malloc(sizeof(data_t)), 0, 23, "####"};
+    AddStaticObject(mainscr, ground, &tree);
+
     game_t *g = malloc(sizeof(game_t));
     g->frog = frog;
     g->car = car;
     g->log = log;
     g->stork = empty_object; //TODO stork
-    g->obstacle = (static_obj_t){}; //TODO obstacle
+    g->obstacle = tree;
     g->ground = ground;
 
     return g;
@@ -98,12 +103,21 @@ void MoveCar(const screen_t screen, object_t *car) {
                     });
 
         //CAR POS DEBUG
-        mvwprintw(screen.win, i + 3, 3, "CARpos Y%d X%.1f", car->data[i].posy, car->data[i].posx);
+        // mvwprintw(screen.win, i + 3, 3, "CARpos Y%d X%.1f", car->data[i].posy, car->data[i].posx);
     }
     for (int i = 1; i < amount; i++) {
         if (car->data[i - 1].movement == STILL) {
             car->data[i - 1] = car->data[i];
             car->data[i].movement = STILL;
+        }
+    }
+}
+
+//00:21:00 9.12.2024
+int CheckObstacle(const data_t frog, const static_object_t tree) {
+    for (int i = 0; i < tree.amount; i++) {
+        if (frog.posx == tree.data[i].posx || frog.posx + 1 == tree.data[i].posx ||
+            frog.posy == tree.data[i].posy || frog.posy + 1 == tree.data[i].posy) {
         }
     }
 }
@@ -213,6 +227,12 @@ void UpdatePosition(const screen_t screen, data_t *data, int objheight, int objw
     }
 }
 
+void DrawObstacle(screen_t screen, static_object_t obj) {
+    for (int i = 0; i < obj.amount; i++)
+        PrintObject(screen, (object_t){&obj.data[i], 2, 2, 0, 0, obj.colors, obj.text, TREE});
+}
+
+
 void PrintObject(const screen_t screen, const object_t obj) {
     WINDOW *win = screen.win;
     const int color = obj.colors;
@@ -227,6 +247,26 @@ void PrintObject(const screen_t screen, const object_t obj) {
             mvwaddch(win, posy + i, posx + j, text[(i * width) + j]);
     }
     wattroff(win, COLOR_PAIR(color));
+}
+
+void AddStaticObject(const screen_t screen, const ground_et *ground, static_object_t *object) {
+    const int height = screen.height, width = screen.width;
+    int lines[height], lineamount = 0;
+
+    for (int i = 0; i < height / 2; i++) {
+        if (ground[i * 2] == GRASS) {
+            lines[lineamount++] = height - (i * 2);
+        }
+    }
+    int objamount = 6 * (lineamount > 1 ? lineamount / 3 * 2 : 1);
+    object->data = realloc(object->data, sizeof(data_t) * objamount);
+    for (int i = 0; i < objamount; i++) {
+        int line = rand() % lineamount;
+        object->data[i] = (data_t){
+            lines[line] - 4, (float) (rand() % (width - 6)), STILL, 0
+        };
+    }
+    object->amount = objamount;
 }
 
 void AddObjects(const screen_t screen, const ground_et *ground, object_t *object) {

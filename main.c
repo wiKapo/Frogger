@@ -63,9 +63,11 @@ int GameLoop(const game_screen_t game_screen, game_t *game, const config_t *conf
     const long starttime = GetTime();
     while (1) {
         DrawGround(gamescr, game->ground);
+        DrawObstacle(gamescr, game->obstacle);
         MoveFrog(gamescr, frog);
         MoveCar(gamescr, &cars);
-        mvwprintw(gamescr.win, 0, 1, "%d %d", cars.amount, cars.maxamount);
+        //CAR AMOUNT / MAXAMOUNT DEBUG
+        //mvwprintw(gamescr.win, 0, 1, "%d %d", cars.amount, cars.maxamount);
         if (rand() % 50 == 0 && cars.amount < cars.maxamount) {
             AddObjects(gamescr, game->ground, &cars);
         }

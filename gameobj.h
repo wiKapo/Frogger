@@ -14,6 +14,7 @@ typedef enum {
     FRIEND = 2,
     LOG = 3,
     STORK = 4,
+    TREE = 5,
 } type_et;
 
 typedef enum {
@@ -59,15 +60,16 @@ typedef struct {
 typedef struct {
     data_t *data;
     int amount;
+    int colors;
     char *text;
-} static_obj_t;
+} static_object_t;
 
 typedef struct {
     frog_t frog;
     object_t car;
     object_t log;
     object_t stork;
-    static_obj_t obstacle;
+    static_object_t obstacle;
     ground_et *ground;
 } game_t;
 

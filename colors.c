@@ -39,6 +39,7 @@ void StartColor() {
     init_pair(20, COLOR_GREEN, COLOR_DARKER_GREEN); //FROG
     init_pair(21, COLOR_BLACK, COLOR_RED); //CAR
     init_pair(22, COLOR_BROWN, COLOR_DARK_BROWN); //LOG
+    init_pair(23, COLOR_GREEN, COLOR_DARK_BROWN); //TREE
 
     //COLORS FOR COUNTDOWN
     init_pair(30, COLOR_WHITE, COLOR_DARK_GRAY); //GO!
