@@ -63,9 +63,9 @@ int GameLoop(const game_screen_t game_screen, const game_t *game, const config_t
         timeout(1000 / FPS);
         int input = getch();
         if (input == 'q') break;
+        frog.data->movement = IntToMove(input);
 
         DrawGround(gamescr, game->ground);
-        frog.data->movement = IntToMove(input);
         MoveFrog(gamescr, frog);
         MoveCar(gamescr, cars);
         //MoveLog();

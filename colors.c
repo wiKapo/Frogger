@@ -33,7 +33,7 @@ void StartColor() {
     init_pair(10, COLOR_WHITE, COLOR_DARK_GREEN); //GRASS
     init_pair(11, COLOR_WHITE, COLOR_DARKER_GRAY); //ROAD
     init_pair(12, COLOR_WHITE, COLOR_CYAN); //WATER
-    init_pair(19, COLOR_WHITE, COLOR_RED); //FINISH
+    init_pair(19, COLOR_WHITE, COLOR_YELLOW); //FINISH
 
     //COLORS FOR OBJECTS
     init_pair(20, COLOR_GREEN, COLOR_DARKER_GREEN); //FROG
