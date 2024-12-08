@@ -23,6 +23,7 @@ void StartColor() {
     init_color(COLOR_DARKER_GREEN, 105, 211, 78);
     init_color(COLOR_BROWN, 457, 199, 78);
     init_color(COLOR_DARK_BROWN, 238, 117, 54);
+    init_color(COLOR_LIGHT_RED, 900, 0, 0);
 
     //SCREEN DEFAULT COLORS
     init_pair(1, COLOR_WHITE, COLOR_DARK_GRAY); //MAIN SCREEN
@@ -44,4 +45,8 @@ void StartColor() {
     init_pair(31, COLOR_GREEN, COLOR_DARK_GRAY); //1
     init_pair(32, COLOR_YELLOW, COLOR_DARK_GRAY); //2
     init_pair(33, COLOR_RED, COLOR_DARK_GRAY); //3
+
+    //COLORS FOR GAME END
+    init_pair(40, COLOR_GREEN, COLOR_DARK_GRAY); //WIN
+    init_pair(41, COLOR_LIGHT_RED, COLOR_DARK_GRAY); //LOSE
 }

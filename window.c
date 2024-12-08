@@ -9,6 +9,7 @@ game_screen_t Start(const config_t *config) {
     WINDOW *initwin = initscr();
     StartColor();
 
+    keypad(initwin, TRUE);
     curs_set(0);
     noecho();
     refresh();
@@ -30,7 +31,6 @@ game_screen_t Start(const config_t *config) {
 
     //create game screen
     WINDOW *gamewin = subwin(mainwin, height - 2, width - 2, 1, 1);
-    keypad(gamewin, TRUE);
 
     //create status screen
     WINDOW *status = newwin(3, width, height, 0);
@@ -94,7 +94,6 @@ int ShowMenu(const screen_t screen) {
 void ShowCountdown(const screen_t screen) {
     WINDOW *win = screen.win;
     WINDOW *countdown = subwin(win, 3, 5, screen.height / 2 - 1, screen.width / 2 - 3);
-    // WINDOW *countdown = subwin(win, 3, 5, 17, 23);
 
     wbkgd(countdown, COLOR_PAIR(33));
     box(countdown, 0, 0);
@@ -152,16 +151,48 @@ void DrawGround(const screen_t screen, const ground_et *ground) {
 
 void ShowFinish(const screen_t screen, const config_t *config, const long time) {
     WINDOW *win = screen.win;
-
-    mvwprintw(win, screen.height / 3, screen.width / 2 - 6, "You win");
+    wattron(win, COLOR_PAIR(40));
+    mvwprintw(win, screen.height / 3, screen.width / 2 - 6, "You win!");
+    wattroff(win, COLOR_PAIR(40));
     mvwprintw(win, screen.height / 3 + 1, screen.width / 2 - 10, "Your score: %02ld:%02ld.%02ld",
               time / 1000 / 60, (time / 1000) % 60, time % 1000);
-    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save to file? [y/n]");
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save score to file? [y/n]");
     wrefresh(win);
     while (1) {
         char c = getch();
         if (c == 'y') {
             SaveScore(config, time);
+            break;
+        }
+        if (c == 'n' || c == 'q') {
+            break;
+        }
+    }
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]");
+    while (1) {
+        char c = getch();
+        if (c == 'y') {
+            // SaveReplay();
+            break;
+        }
+        if (c == 'n' || c == 'q') {
+            break;
+        }
+    }
+}
+
+void ShowFail(const screen_t screen, const config_t *config) {
+    WINDOW *win = screen.win;
+
+    wattron(win, COLOR_PAIR(41));
+    mvwprintw(win, screen.height / 3, screen.width / 2 - 6, "You lose");
+    wattroff(win, COLOR_PAIR(41));
+    mvwprintw(win, screen.height / 3 + 2, screen.width / 2 - 10, "Save replay? [y/n]");
+    wrefresh(win);
+    while (1) {
+        char c = getch();
+        if (c == 'y') {
+            // SaveReplay();
             break;
         }
         if (c == 'n' || c == 'q') {

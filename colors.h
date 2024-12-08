@@ -11,6 +11,7 @@
 #define COLOR_DARK_BROWN    20
 
 #define COLOR_LIGHT_GRAY    32
+#define COLOR_LIGHT_RED     33
 
 void StartColor();
 

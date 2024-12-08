@@ -20,6 +20,8 @@ void MoveFrog(screen_t screen, object_t frog);
 
 void MoveCar(screen_t screen, object_t car);
 
+int CheckCollision(object_t frog, object_t obj);
+
 move_et IntToMove(int input);
 
 #endif //GAME_H

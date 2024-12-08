@@ -36,7 +36,7 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
     object_t empty_object = {};
 
     data_t *frogdata = malloc(sizeof(data_t));
-    frogdata[0] = (data_t){height - 1, (float)mainscr.width / 2, 2, 2, NONE, 1};
+    frogdata[0] = (data_t){height - 1, (float) mainscr.width / 2, 2, 2, NONE, 1};
     const object_t frog = (object_t){frogdata, 1, 20, "IHHL", FROG};
 
     game_t *g = malloc(sizeof(game_t));
@@ -56,14 +56,13 @@ void MoveFrog(const screen_t screen, const object_t frog) {
     //FROG POS DEBUG
     // WINDOW *win = screen.win;
     // mvwprintw(win, 1, 1, "MOVE %d", frog->data->movement);
-    // mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", frog->data->posy, screen.height, frog->data->posx, screen.width);
+    // mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", frog.data->posy, screen.height, frog.data->posx, screen.width);
 
     PrintObject(screen, frog);
 }
 
 void MoveCar(const screen_t screen, const object_t car) {
     const int amount = car.amount;
-    mvwprintw(screen.win, 1, 1, "%d", amount);
     for (int i = 0; i < amount; i++) {
         UpdatePosition(screen, &car.data[i], CAR);
         // data_t *data = malloc(sizeof(data_t));
@@ -71,9 +70,35 @@ void MoveCar(const screen_t screen, const object_t car) {
         PrintObject(screen, (object_t){&car.data[i], amount, car.colors, car.text, car.type});
 
         //CAR POS DEBUG
-        mvwprintw(screen.win, i + 3, 3, "CARpos Y%d X%.1f", car.data[i].posy, car.data[i].posx);
+        // mvwprintw(screen.win, i + 3, 3, "CARpos Y%d X%.1f", car.data[i].posy, car.data[i].posx);
         // free(data);
     }
+}
+
+int CheckCollision(object_t frog, object_t obj) {
+    const int posy = frog.data->posy;
+    const float posx = frog.data->posx;
+    const int height = frog.data->height - 1;
+    const float width = (float) frog.data->width;
+
+    for (int i = 0; i < obj.amount; i++) {
+        int obj_posy = obj.data[i].posy;
+        float obj_posx = obj.data[i].posx;
+        int obj_height = obj.data[i].height - 1;
+        float obj_width = (float) obj.data[i].width - 1;
+        if (
+            (posx >= obj_posx && posx <= obj_posx + obj_width && //TOP LEFT
+             posy >= obj_posy && posy <= obj_posy + obj_height) ||
+            (posx + width >= obj_posx && posx + width <= obj_posx + obj_width && //TOP RIGHT
+             posy >= obj_posy && posy <= obj_posy + obj_height) ||
+            (posx >= obj_posx && posx <= obj_posx + obj_width && //BOTTOM LEFT
+             posy + height >= obj_posy && posy + height <= obj_posy + obj_height) ||
+            (posx + width >= obj_posx && posx + width <= obj_posx + obj_width && //BOTTOM RIGHT
+             posy + height >= obj_posy && posy + height <= obj_posy + obj_height)
+        )
+            return 1;
+    }
+    return 0;
 }
 
 move_et IntToMove(int input) {
@@ -134,7 +159,7 @@ object_t GenerateObject(const screen_t screen, const ground_et *ground, const ty
     float speed[amount];
     move_et direction[amount];
     for (int i = 0; i < amount; i++) {
-        speed[i] = (float)(rand() % 100) / 40;
+        speed[i] = (float) (rand() % 100) / 40;
         direction[i] = (rand() % 2) ? LEFT : RIGHT;
     }
     // randomizing the amount of objects
@@ -145,7 +170,7 @@ object_t GenerateObject(const screen_t screen, const ground_et *ground, const ty
         int line = rand() % amount;
         data[i] = (data_t){
             //TODO (posx) the cars can collide on spawn
-            lines[line] - 4, (float)(rand() % (width - 6)),
+            lines[line] - 4, (float) (rand() % (width - 6)),
             2, (type == CAR) ? 4 : 6,
             direction[line], speed[line],
         };
@@ -172,11 +197,11 @@ void UpdatePosition(const screen_t screen, data_t *data, const type_et type) {
             if (0 < *posy && *posy < height - objheight) (*posy)++;
             break;
         case LEFT:
-            if (0 < *posx && (int)*posx < width) *posx -= 1 * speed;
+            if (0 < *posx && (int) *posx < width) *posx -= 1 * speed;
             else if (type != FROG) *posx = width - 1;
             break;
         case RIGHT:
-            if (0 <= *posx && (int)*posx < width - objwidth) *posx += 1 * speed;
+            if (0 <= *posx && (int) *posx < width - objwidth) *posx += 1 * speed;
             else if (type != FROG) *posx = 0;
             break;
         default: break;
@@ -188,7 +213,7 @@ void PrintObject(const screen_t screen, const object_t obj) {
     WINDOW *win = screen.win;
     const int color = obj.colors;
     const int posy = obj.data->posy;
-    const int posx = (int)obj.data->posx;
+    const int posx = (int) obj.data->posx;
     const int height = obj.data->height, width = obj.data->width;
     const char *text = obj.text;
 

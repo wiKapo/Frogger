@@ -51,25 +51,27 @@ void GameLoop(const game_screen_t game_screen, const game_t *game, const config_
     WINDOW *mainwin = mainscr.win;
     const screen_t gamescr = game_screen.gamescr;
     WINDOW *gamewin = gamescr.win;
-    const screen_t groundscr = game_screen.groundscr;
 
     const object_t frog = game->frog;
     const object_t cars = game->car;
 
     const long starttime = GetTime();
     while (1) {
-        wtimeout(gamewin, 1000 / FPS);
-        int input = wgetch(gamewin);
+        timeout(1000 / FPS);
+        int input = getch();
         if (input == 'q') break;
 
-        wclear(gamewin);
         DrawGround(gamescr, game->ground);
         frog.data->movement = IntToMove(input);
         MoveFrog(gamescr, frog);
         MoveCar(gamescr, cars);
         //MoveLog();
         //MoveStork();
-        //CheckCollision();
+        if (CheckCollision(frog, cars)) {
+            ClearScreenT(mainscr, GAME_TITLE);
+            ShowFail(gamescr, config);
+            break;
+        }
 
         long gametime = GetTime() - starttime;
 
@@ -78,6 +80,7 @@ void GameLoop(const game_screen_t game_screen, const game_t *game, const config_
             ShowFinish(gamescr, config, gametime);
             break;
         }
+        wrefresh(gamewin);
 
         mvwprintw(mainwin, 0, mainscr.width - 12, "[%02ld:%02ld.%02ld]",
                   gametime / 1000 / 60,
