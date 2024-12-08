@@ -9,7 +9,7 @@ void LoadDefaultConfig(const char *filename);
 config_t *ReadConfigFile(const char *filename) {
     FILE *file = fopen(filename, "r");
     if (file == NULL || fgetc(file) == EOF) {
-        fclose(file);
+        if (file) fclose(file);
         LoadDefaultConfig(filename);
         file = fopen(filename, "r");
     } else
