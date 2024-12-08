@@ -24,8 +24,9 @@ void StartColor() {
     init_color(COLOR_BROWN, 457, 199, 78);
     init_color(COLOR_DARK_BROWN, 238, 117, 54);
 
-    init_pair(1, COLOR_GREEN, COLOR_DARK_GRAY);
-    init_pair(2, COLOR_WHITE, COLOR_DARK_GRAY);
+    //SCREEN DEFAULT COLORS
+    init_pair(1, COLOR_WHITE, COLOR_DARK_GRAY); //MAIN SCREEN
+    init_pair(2, COLOR_GREEN, COLOR_DARK_GRAY); //STATUS SCREEN
 
     //COLORS FOR GROUND
     init_pair(10, COLOR_WHITE, COLOR_DARK_GREEN); //GRASS

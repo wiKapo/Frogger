@@ -22,7 +22,7 @@ game_screen_t Start(const config_t *config) {
 
     //create main screen
     WINDOW *mainwin = newwin(height, width, 0, 0);
-    int colwin = 2;
+    int colwin = 1;
     wbkgd(mainwin, COLOR_PAIR(colwin));
     box(mainwin, 0, 0);
     mvwprintw(mainwin, 0, width / 2 - 5, GAME_TITLE);
@@ -37,7 +37,7 @@ game_screen_t Start(const config_t *config) {
 
     //create status screen
     WINDOW *status = newwin(3, width, height, 0);
-    int colstatus = 1;
+    int colstatus = 2;
     wbkgd(status, COLOR_PAIR(colstatus));
     box(status, 0, 0);
     mvwprintw(status, 1, 1, "%s %s %s", (char *) config[1].data[0], (char *) config[1].data[1],
