@@ -82,7 +82,7 @@ void MoveCar(const screen_t screen, object_t *car) {
             UpdatePosition(screen, &car->data[i], car->height, car->width, car->type);
         if ((car->data[i].movement == LEFT && (int) car->data[i].posx == 0 ||
              car->data[i].movement == RIGHT && (int) car->data[i].posx == car->width - 1)) {
-            if (rand() % 25 == 0 && car->amount > 5) {
+            if (rand() % 25 == 0 && car->amount > 6) {
                 car->amount--;
                 car->data[i].posx = -10;
                 car->data[i].movement = STILL;
@@ -262,7 +262,7 @@ void AddObjects(const screen_t screen, const ground_et *ground, object_t *object
         }
 
         // randomizing the amount of objects when creating new
-        int objamount = 6 * (lineamount > 1 ? lineamount / 2 : 1);
+        int objamount = 6 * (lineamount > 1 ? lineamount / 3 * 2 : 1);
         object->data = realloc(object->data, sizeof(data_t) * objamount);
         for (int i = 0; i < objamount; i++) {
             int line = rand() % lineamount;
@@ -272,13 +272,14 @@ void AddObjects(const screen_t screen, const ground_et *ground, object_t *object
             };
         }
         object->amount = objamount;
+        object->maxamount = objamount;
         return;
     }
     const float val = (float) (rand() % 20) / 10;
+    int check = object->data[amount].movement == LEFT;
     object->data[amount] = (data_t){
-        lines[rand() % lineamount],
-        object->data[amount].movement == LEFT ? (float) screen.width - 1 : 0,
-        object->data[amount].movement, val > 0.5 ? val : 1
+        lines[rand() % lineamount] - 2, check ? (float) screen.width - 1 : 0,
+        check ? LEFT : RIGHT, val > 0.5 ? val : 1
     };
     object->amount++;
 }
