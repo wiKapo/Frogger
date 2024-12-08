@@ -13,14 +13,16 @@ void StartColor() {
     init_color(COLOR_YELLOW, 750, 750, 0);
     init_color(COLOR_RED, 750, 0, 0);
     init_color(COLOR_GREEN, 0, 750, 0);
-    init_color(COLOR_DARK_GREEN, 0, 500, 0);
-    init_color(COLOR_DARKER_GREEN, 105, 211, 78);
     init_color(COLOR_WHITE, 900, 900, 900);
 
     init_color(COLOR_LIGHT_GRAY, 609, 609, 609);
     init_color(COLOR_GRAY, 330, 330, 330);
     init_color(COLOR_DARK_GRAY, 100, 100, 100);
     init_color(COLOR_DARKER_GRAY, 50, 50, 50);
+    init_color(COLOR_DARK_GREEN, 0, 500, 0);
+    init_color(COLOR_DARKER_GREEN, 105, 211, 78);
+    init_color(COLOR_BROWN, 457, 199, 78);
+    init_color(COLOR_DARK_BROWN, 238, 117, 54);
 
     init_pair(1, COLOR_GREEN, COLOR_DARK_GRAY);
     init_pair(2, COLOR_WHITE, COLOR_DARK_GRAY);
@@ -33,6 +35,8 @@ void StartColor() {
 
     //COLORS FOR OBJECTS
     init_pair(20, COLOR_GREEN, COLOR_DARKER_GREEN); //FROG
+    init_pair(21, COLOR_BLACK, COLOR_RED); //CAR
+    init_pair(22, COLOR_BROWN, COLOR_DARK_BROWN); //LOG
 
     //COLORS FOR COUNTDOWN
     init_pair(30, COLOR_WHITE, COLOR_DARK_GRAY); //GO!
