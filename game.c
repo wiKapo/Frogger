@@ -2,6 +2,8 @@
 
 object_t GenerateObject(screen_t screen, const ground_et *ground, type_et type);
 
+void FrogUpdatePosition(screen_t screen, frog_t *frog);
+
 void UpdatePosition(screen_t screen, data_t *data, type_et type);
 
 void PrintObject(screen_t screen, object_t obj);
@@ -55,7 +57,7 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
 }
 
 void MoveFrog(const screen_t screen, frog_t *frog) {
-    UpdatePosition(screen, &frog->data, FROG);
+    FrogUpdatePosition(screen, frog);
 
     //FROG POS DEBUG
     // WINDOW *win = screen.win;
@@ -69,8 +71,6 @@ void MoveCar(const screen_t screen, const object_t car) {
     const int amount = car.amount;
     for (int i = 0; i < amount; i++) {
         UpdatePosition(screen, &car.data[i], CAR);
-        // data_t *data = malloc(sizeof(data_t));
-        // *data = car->data[i];
         PrintObject(screen, (object_t){&car.data[i], amount, car.colors, car.text, car.type});
 
         //CAR POS DEBUG
@@ -133,8 +133,59 @@ move_et IntToMove(int input) {
     return move;
 }
 
+void FrogUpdatePosition(const screen_t screen, frog_t *frog) {
+    long *time = &frog->timeout;
+    if (*time > GetTime() || frog->data.movement == STILL)
+        return;
+    UpdatePosition(screen, &frog->data, FROG);
+    *time = GetTime() + INPUT_DELAY;
+}
+
+void UpdatePosition(const screen_t screen, data_t *data, const type_et type) {
+    const int height = screen.height, width = screen.width;
+    int *posy = &data->posy;
+    float *posx = &data->posx;
+    const int objwidth = data->width, objheight = data->height;
+    const float speed = data->speed;
+    const move_et movement = data->movement;
+
+    switch (movement) {
+        case STILL: break;
+        case UP:
+            if (0 < *posy && *posy < height - 1) (*posy)--;
+            break;
+        case DOWN:
+            if (0 < *posy && *posy < height - objheight) (*posy)++;
+            break;
+        case LEFT:
+            if (0 < *posx && (int) *posx < width) *posx -= 1 * speed;
+            else if (type != FROG) *posx = width - 1;
+            break;
+        case RIGHT:
+            if (0 <= *posx && (int) *posx < width - objwidth) *posx += 1 * speed;
+            else if (type != FROG) *posx = 0;
+            break;
+        default: break;
+    }
+}
+
+void PrintObject(const screen_t screen, const object_t obj) {
+    WINDOW *win = screen.win;
+    const int color = obj.colors;
+    const int posy = obj.data->posy;
+    const int posx = (int) obj.data->posx;
+    const int height = obj.data->height, width = obj.data->width;
+    const char *text = obj.text;
+
+    wattron(win, COLOR_PAIR(color));
+    for (int i = 0; i < height; i++) {
+        for (int j = 0; j < width; j++)
+            mvwaddch(win, posy + i, posx + j, text[(i * width) + j]);
+    }
+    wattroff(win, COLOR_PAIR(color));
+}
+
 object_t GenerateObject(const screen_t screen, const ground_et *ground, const type_et type) {
-    // object_t *object = malloc(sizeof(object_t));
     const int height = screen.height, width = screen.width;
     int lines[height], amount = 0;
     char *text;
@@ -179,52 +230,6 @@ object_t GenerateObject(const screen_t screen, const ground_et *ground, const ty
             direction[line], speed[line],
         };
     }
+    // free(data);
     return (object_t){data, objamount, colors, text, type};
-}
-
-void UpdatePosition(const screen_t screen, data_t *data, const type_et type) {
-    const int height = screen.height, width = screen.width;
-    // const size_t amount = sizeof(obj->data) / sizeof(data_t*);
-    // for (int i = 0; i < amount; i++) {
-    int *posy = &data->posy;
-    float *posx = &data->posx;
-    const int objwidth = data->width, objheight = data->height;
-    const float speed = data->speed;
-    const move_et movement = data->movement;
-
-    switch (movement) {
-        case STILL: break;
-        case UP:
-            if (0 < *posy && *posy < height - 1) (*posy)--;
-            break;
-        case DOWN:
-            if (0 < *posy && *posy < height - objheight) (*posy)++;
-            break;
-        case LEFT:
-            if (0 < *posx && (int) *posx < width) *posx -= 1 * speed;
-            else if (type != FROG) *posx = width - 1;
-            break;
-        case RIGHT:
-            if (0 <= *posx && (int) *posx < width - objwidth) *posx += 1 * speed;
-            else if (type != FROG) *posx = 0;
-            break;
-        default: break;
-    }
-    // }
-}
-
-void PrintObject(const screen_t screen, const object_t obj) {
-    WINDOW *win = screen.win;
-    const int color = obj.colors;
-    const int posy = obj.data->posy;
-    const int posx = (int) obj.data->posx;
-    const int height = obj.data->height, width = obj.data->width;
-    const char *text = obj.text;
-
-    wattron(win, COLOR_PAIR(color));
-    for (int i = 0; i < height; i++) {
-        for (int j = 0; j < width; j++)
-            mvwaddch(win, posy + i, posx + j, text[(i * width) + j]);
-    }
-    wattroff(win, COLOR_PAIR(color));
 }

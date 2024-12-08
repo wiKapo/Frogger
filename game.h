@@ -1,10 +1,13 @@
 #include "file.h"
 #include "screen.h"
 #include "gameobj.h"
+#include "time.h"
 #include <stdlib.h>
 
 #ifndef GAME_H
 #define GAME_H
+
+#define INPUT_DELAY     50
 
 typedef enum {
     EXIT = 0,

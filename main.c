@@ -3,7 +3,7 @@
 #include "game.h"
 
 #define CONFIG_FILENAME     "config.txt"
-#define FPS                 10
+#define FPS                 30
 
 int GameLoop(game_screen_t game_screen, game_t *game, const config_t *config);
 
@@ -19,7 +19,7 @@ int main() {
     int retry = 0;
     //MAIN LOOP
     while (1) {
-        if(!retry) {
+        if (!retry) {
             ClearScreenT(mainscr, GAME_TITLE);
             play = ShowMenu(mainscr);
             ClearScreenT(mainscr, GAME_TITLE);
@@ -57,14 +57,10 @@ int GameLoop(const game_screen_t game_screen, game_t *game, const config_t *conf
 
     frog_t *frog = &game->frog;
     const object_t cars = game->car;
+    int input = 0;
 
     const long starttime = GetTime();
     while (1) {
-        timeout(1000 / FPS);
-        int input = getch();
-        if (input == 'q') break;
-        frog->data.movement = IntToMove(input);
-
         DrawGround(gamescr, game->ground);
         MoveFrog(gamescr, frog);
         MoveCar(gamescr, cars);
@@ -91,6 +87,11 @@ int GameLoop(const game_screen_t game_screen, game_t *game, const config_t *conf
                   (gametime / 1000) % 60,
                   gametime % 1000);
         wrefresh(mainwin);
+
+        timeout(1000 / FPS);
+        input = getch();
+        if (input == 'q') break;
+        frog->data.movement = IntToMove(input);
     }
     return 0;
 }
