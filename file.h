@@ -4,11 +4,12 @@
 #define FILE_H
 
 typedef struct {
-  char arg[10];
-  void** data;
+    char arg[10];
+    void **data;
 } config_t;
 
-config_t* ReadConfigFile(const char* filename);
+config_t *ReadConfigFile(const char *filename);
+
 void SaveScore(const config_t *config, long score);
 
 #endif //FILE_H

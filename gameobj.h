@@ -9,7 +9,7 @@ typedef enum {
 } ground_et;
 
 typedef enum {
-    PLAYER = 0,
+    FROG = 0,
     CAR = 1,
     LOG = 2,
     STORK = 3,
@@ -32,21 +32,23 @@ typedef struct {
     int posx;
     int height;
     int width;
-} pos_t;
+    move_et movement;
+    float speed;
+} data_t;
 
 typedef struct {
-    pos_t pos;
+    data_t* data;
     int colors;
     char *text;
-    move_et movement;
     type_et type;
 } object_t;
 
 typedef struct {
     object_t frog;
-    object_t car;
-    object_t log;
+    object_t *cars;
+    object_t *log;
     object_t stork;
+    object_t *obstacle;
     ground_et* ground;
 } game_t;
 

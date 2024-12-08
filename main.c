@@ -47,6 +47,7 @@ int main() {
 void GameLoop(const screen_t mainscr, const game_t *game, const config_t *config) {
     WINDOW *mainwin = mainscr.win;
     object_t frog = game->frog;
+    object_t *cars = game->cars;
 
     const long starttime = GetTime();
     while (1) {
@@ -56,16 +57,16 @@ void GameLoop(const screen_t mainscr, const game_t *game, const config_t *config
 
         DrawGround(mainscr, game->ground);
 
-        frog.movement = IntToMove(input);
+        frog.data->movement = IntToMove(input);
         MoveFrog(mainscr, &frog);
-        //MoveCar();
+        MoveCar(mainscr, cars);
         //MoveLog();
         //MoveStork();
         //CheckCollision();
 
         long gametime = GetTime() - starttime;
 
-        if (frog.pos.posy == 0) {
+        if (frog.data->posy == 0) {
             ShowFinish(mainscr, config, gametime);
             break;
         }
