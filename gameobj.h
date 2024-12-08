@@ -11,8 +11,9 @@ typedef enum {
 typedef enum {
     FROG = 0,
     CAR = 1,
-    LOG = 2,
-    STORK = 3,
+    FRIEND = 2,
+    LOG = 3,
+    STORK = 4,
 } type_et;
 
 typedef enum {
@@ -30,15 +31,16 @@ typedef enum {
 typedef struct {
     int posy;
     float posx;
-    int height;
-    int width;
     move_et movement;
     float speed;
 } data_t;
 
 typedef struct {
     data_t *data;
+    int height;
+    int width;
     int amount;
+    int maxamount;
     int colors;
     char *text;
     type_et type;
@@ -46,6 +48,8 @@ typedef struct {
 
 typedef struct {
     data_t data;
+    int height;
+    int width;
     int colors;
     char *text;
     long timeout;

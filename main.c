@@ -40,6 +40,7 @@ int main() {
         ClearScreenT(mainscr, GAME_TITLE);
 
         DrawGround(gamescr, game->ground);
+        wrefresh(gamescr.win);
         ShowCountdown(mainscr);
 
         //GAME LOOP
@@ -56,16 +57,21 @@ int GameLoop(const game_screen_t game_screen, game_t *game, const config_t *conf
     WINDOW *gamewin = gamescr.win;
 
     frog_t *frog = &game->frog;
-    const object_t cars = game->car;
+    object_t cars = game->car;
     int input = 0;
 
     const long starttime = GetTime();
     while (1) {
         DrawGround(gamescr, game->ground);
         MoveFrog(gamescr, frog);
-        MoveCar(gamescr, cars);
+        MoveCar(gamescr, &cars);
+        if (rand() % 25 == 0 && cars.amount == cars.maxamount) {
+            AddObjects(gamescr, game->ground, &cars);
+        }
         //MoveLog();
         //MoveStork();
+        wrefresh(gamewin);
+
         if (CheckCollision(*frog, cars)) {
             ClearScreenT(mainscr, GAME_TITLE);
             if (ShowFail(gamescr, config))
@@ -80,7 +86,6 @@ int GameLoop(const game_screen_t game_screen, game_t *game, const config_t *conf
             ShowFinish(gamescr, config, gametime);
             break;
         }
-        wrefresh(gamewin);
 
         mvwprintw(mainwin, 0, mainscr.width - 12, "[%02ld:%02ld.%02ld]",
                   gametime / 1000 / 60,

@@ -146,7 +146,6 @@ void DrawGround(const screen_t screen, const ground_et *ground) {
     //     if (i % 2 == 1)
     //         wattroff(win, COLOR_PAIR(1));
     // }
-    wrefresh(win);
 }
 
 void ShowFinish(const screen_t screen, const config_t *config, const long time) {

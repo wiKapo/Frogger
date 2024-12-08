@@ -1,10 +1,10 @@
 #include "game.h"
 
-object_t GenerateObject(screen_t screen, const ground_et *ground, type_et type);
+int CheckSide(data_t test, int width, object_t *search);
 
 void FrogUpdatePosition(screen_t screen, frog_t *frog);
 
-void UpdatePosition(screen_t screen, data_t *data, type_et type);
+void UpdatePosition(screen_t screen, data_t *data, int objheight, int objwidth, type_et type);
 
 void PrintObject(screen_t screen, object_t obj);
 
@@ -39,16 +39,20 @@ game_t *StartGame(const config_t *config, const game_screen_t game_screen, int t
     const frog_t frog = (frog_t){
         {
             height - 1, (float) mainscr.width / 2,
-            2, 2,
             STILL, 1
         },
-        20, "IHHL", 0, FROG
+        2, 2, 20, "FROG", 0, FROG
     };
+    // data_t empty = (data_t){0, 0, STILL, 0};
+    object_t car = (object_t){malloc(sizeof(data_t)), 2, 4, 0, 0, 21, "_/T\\O--O", CAR};
+    object_t log = (object_t){malloc(sizeof(data_t)), 2, 6, 0, 0, 22, "&~--~&&~--~&", LOG};
+    AddObjects(mainscr, ground, &car);
+    AddObjects(mainscr, ground, &log);
 
     game_t *g = malloc(sizeof(game_t));
     g->frog = frog;
-    g->car = GenerateObject(mainscr, ground, CAR);
-    g->log = empty_object; //TODO log
+    g->car = car;
+    g->log = log;
     g->stork = empty_object; //TODO stork
     g->obstacle = (static_obj_t){}; //TODO obstacle
     g->ground = ground;
@@ -64,32 +68,73 @@ void MoveFrog(const screen_t screen, frog_t *frog) {
     // mvwprintw(win, 1, 1, "MOVE %d", frog->data->movement);
     // mvwprintw(win, 2, 2, "posy: %d/%d posx: %d/%d", frog.data->posy, screen.height, frog.data->posx, screen.width);
 
-    PrintObject(screen, (object_t){&frog->data, 1, frog->colors, frog->text, frog->type});
+    PrintObject(screen, (object_t){
+                    &frog->data,
+                    frog->width, frog->height,
+                    1, 1, frog->colors, frog->text, frog->type
+                });
 }
 
-void MoveCar(const screen_t screen, const object_t car) {
-    const int amount = car.amount;
+void MoveCar(const screen_t screen, object_t *car) {
+    const int amount = car->amount;
     for (int i = 0; i < amount; i++) {
-        UpdatePosition(screen, &car.data[i], CAR);
-        PrintObject(screen, (object_t){&car.data[i], amount, car.colors, car.text, car.type});
+        if (CheckSide(car->data[i], car->width, car))
+            UpdatePosition(screen, &car->data[i], car->height, car->width, car->type);
+        if ((car->data[i].movement == LEFT && (int) car->data[i].posx == 0 ||
+             car->data[i].movement == RIGHT && (int) car->data[i].posx == car->width - 1)) {
+            if (rand() % 25 == 0 && car->amount > 5) {
+                car->amount--;
+                car->data[i].posx = -10;
+                car->data[i].movement = STILL;
+            } else if (rand() % 5 == 0) {
+                float val = (float) (rand() % 20) / 10;
+                car->data[i].speed = val > 0.5 ? val : 1;
+            }
+        }
+        PrintObject(screen, (object_t){
+                        &car->data[i],
+                        car->height, car->width,
+                        amount, car->maxamount, car->colors, car->text, car->type
+                    });
 
         //CAR POS DEBUG
-        // mvwprintw(screen.win, i + 3, 3, "CARpos Y%d X%.1f", car.data[i].posy, car.data[i].posx);
-        // free(data);
+        mvwprintw(screen.win, i + 3, 3, "CARpos Y%d X%.1f", car->data[i].posy, car->data[i].posx);
+    }
+    for (int i = 1; i < amount; i++) {
+        if (car->data[i - 1].movement == STILL) {
+            car->data[i - 1] = car->data[i];
+            car->data[i].movement = STILL;
+        }
     }
 }
 
-int CheckCollision(frog_t frog, object_t obj) {
+int CheckSide(const data_t test, int width, object_t *search) {
+    const int movement = test.movement;
+    const int posx = (int) test.posx, posy = test.posy;
+    const int amount = search->amount;
+    for (int i = 0; i < amount; i++) {
+        if (posx == (int) search->data[i].posx || posy != search->data[i].posy)
+            continue;
+        if (movement == LEFT &&
+            (int) posx == (int) search->data[i].posx + width)
+            return 0;
+        if (movement == RIGHT && posx + width == (int) search->data[i].posx)
+            return 0;
+    }
+    return 1;
+}
+
+int CheckCollision(const frog_t frog, const object_t obj) {
     const int posy = frog.data.posy;
     const float posx = frog.data.posx;
-    const int height = frog.data.height - 1;
-    const float width = (float) frog.data.width;
+    const int height = frog.height - 1;
+    const float width = (float) frog.width - 1;
 
     for (int i = 0; i < obj.amount; i++) {
         int obj_posy = obj.data[i].posy;
         float obj_posx = obj.data[i].posx;
-        int obj_height = obj.data[i].height - 1;
-        float obj_width = (float) obj.data[i].width - 1;
+        int obj_height = obj.height - 1;
+        float obj_width = (float) obj.width - 1;
         if (
             (posx >= obj_posx && posx <= obj_posx + obj_width && //TOP LEFT
              posy >= obj_posy && posy <= obj_posy + obj_height) ||
@@ -137,15 +182,14 @@ void FrogUpdatePosition(const screen_t screen, frog_t *frog) {
     long *time = &frog->timeout;
     if (*time > GetTime() || frog->data.movement == STILL)
         return;
-    UpdatePosition(screen, &frog->data, FROG);
+    UpdatePosition(screen, &frog->data, frog->width, frog->height, frog->type);
     *time = GetTime() + INPUT_DELAY;
 }
 
-void UpdatePosition(const screen_t screen, data_t *data, const type_et type) {
+void UpdatePosition(const screen_t screen, data_t *data, int objheight, int objwidth, type_et type) {
     const int height = screen.height, width = screen.width;
     int *posy = &data->posy;
     float *posx = &data->posx;
-    const int objwidth = data->width, objheight = data->height;
     const float speed = data->speed;
     const move_et movement = data->movement;
 
@@ -159,7 +203,7 @@ void UpdatePosition(const screen_t screen, data_t *data, const type_et type) {
             break;
         case LEFT:
             if (0 < *posx && (int) *posx < width) *posx -= 1 * speed;
-            else if (type != FROG) *posx = width - 1;
+            else if (type != FROG) *posx = (float) width - 1;
             break;
         case RIGHT:
             if (0 <= *posx && (int) *posx < width - objwidth) *posx += 1 * speed;
@@ -174,7 +218,7 @@ void PrintObject(const screen_t screen, const object_t obj) {
     const int color = obj.colors;
     const int posy = obj.data->posy;
     const int posx = (int) obj.data->posx;
-    const int height = obj.data->height, width = obj.data->width;
+    const int height = obj.height, width = obj.width;
     const char *text = obj.text;
 
     wattron(win, COLOR_PAIR(color));
@@ -185,51 +229,56 @@ void PrintObject(const screen_t screen, const object_t obj) {
     wattroff(win, COLOR_PAIR(color));
 }
 
-object_t GenerateObject(const screen_t screen, const ground_et *ground, const type_et type) {
+void AddObjects(const screen_t screen, const ground_et *ground, object_t *object) {
     const int height = screen.height, width = screen.width;
-    int lines[height], amount = 0;
-    char *text;
-    int colors;
+    int lines[height], lineamount = 0;
+    const type_et type = object->type;
+    int amount = object->amount;
     switch (type) {
         case CAR:
             for (int i = 0; i < (height - 1) / 2; i++) {
                 if (ground[i * 2] == ROAD) {
-                    lines[amount++] = (height - (i * 2));
+                    lines[lineamount++] = (height - (i * 2));
                 }
             }
-            text = "_/T\\O--O";
-            colors = 21;
             break;
         case LOG:
             for (int i = 0; i < height / 2; i++) {
                 if (ground[i * 2] == WATER) {
-                    lines[amount++] = (height - i - 1);
+                    lines[lineamount++] = (height - i - 1);
                 }
             }
-            text = "&~--~&&~--~&";
-            colors = 22;
             break;
-        default: return (object_t){};
+        default: break;
     }
-    float speed[amount];
-    move_et direction[amount];
-    for (int i = 0; i < amount; i++) {
-        speed[i] = (float) (rand() % 100) / 40;
-        direction[i] = (rand() % 2) ? LEFT : RIGHT;
-    }
-    // randomizing the amount of objects
-    const int objamount = 5 * (amount > 1 ? amount / 2 : 1);
 
-    data_t *data = malloc(sizeof(data_t) * objamount);
-    for (int i = 0; i < objamount; i++) {
-        int line = rand() % amount;
-        data[i] = (data_t){
-            //TODO (posx) the cars can collide on spawn
-            lines[line] - 4, (float) (rand() % (width - 6)),
-            2, (type == CAR) ? 4 : 6,
-            direction[line], speed[line],
-        };
+    if (amount == 0) {
+        float speed[lineamount];
+        move_et direction[lineamount];
+        for (int i = 0; i < lineamount; i++) {
+            float val = (float) (rand() % 100) / 40;
+            speed[i] = val > 0.5 ? val : 1;
+            direction[i] = (rand() % 2) ? LEFT : RIGHT;
+        }
+
+        // randomizing the amount of objects when creating new
+        int objamount = 6 * (lineamount > 1 ? lineamount / 2 : 1);
+        object->data = realloc(object->data, sizeof(data_t) * objamount);
+        for (int i = 0; i < objamount; i++) {
+            int line = rand() % lineamount;
+            object->data[i] = (data_t){
+                lines[line] - 4, (float) (rand() % (width - 6)),
+                direction[line], speed[line],
+            };
+        }
+        object->amount = objamount;
+        return;
     }
-    free(data);
-    return (object_t){data, objamount, colors, text, type};
+    const float val = (float) (rand() % 20) / 10;
+    object->data[amount] = (data_t){
+        lines[rand() % lineamount],
+        object->data[amount].movement == LEFT ? (float) screen.width - 1 : 0,
+        object->data[amount].movement, val > 0.5 ? val : 1
+    };
+    object->amount++;
 }
