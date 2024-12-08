@@ -5,7 +5,7 @@
 #define CONFIG_FILENAME     "config.txt"
 #define FPS                 30
 
-void GameLoop(screen_t mainscr, const game_t *game, const config_t *config);
+void GameLoop(game_screen_t game_screen, const game_t *game, const config_t *config);
 
 int main() {
     //read config from file
@@ -13,19 +13,20 @@ int main() {
 
     const game_screen_t game_screen = Start(config);
     const screen_t mainscr = game_screen.mainscr;
+    const screen_t groundscr = game_screen.groundscr;
 
     //MAIN LOOP
     while (1) {
         ClearScreenT(mainscr, GAME_TITLE);
-        int play = ShowMenu(mainscr);
+        const game_state_et play = ShowMenu(mainscr);
         ClearScreenT(mainscr, GAME_TITLE);
 
-        if (!play) break;
-        if (play == 80) {
+        if (play == EXIT) break;
+        if (play == LEADERBOARD) {
             //ShowLeaderboard();
             continue;
         }
-        if (play == 99) {
+        if (play == SETTINGS) {
             //ShowSettings();
             config = ReadConfigFile(CONFIG_FILENAME);
             continue;
@@ -34,32 +35,36 @@ int main() {
 
         ClearScreenT(mainscr, GAME_TITLE);
 
-        DrawGround(mainscr, game->ground);
+        DrawGround(groundscr, game->ground);
         ShowCountdown(mainscr);
 
         //GAME LOOP
-        GameLoop(mainscr, game, config);
+        GameLoop(game_screen, game, config);
     }
     endwin();
     return 0;
 }
 
-void GameLoop(const screen_t mainscr, const game_t *game, const config_t *config) {
+void GameLoop(const game_screen_t game_screen, const game_t *game, const config_t *config) {
+    const screen_t mainscr = game_screen.mainscr;
     WINDOW *mainwin = mainscr.win;
-    object_t frog = game->frog;
-    object_t *cars = game->cars;
+    const screen_t gamescr = game_screen.gamescr;
+    WINDOW *gamewin = gamescr.win;
+    const screen_t groundscr = game_screen.groundscr;
+
+    const object_t frog = game->frog;
+    const object_t cars = game->car;
 
     const long starttime = GetTime();
     while (1) {
-        wtimeout(mainwin, 1000 / FPS);
-        int input = wgetch(mainwin);
+        wtimeout(gamewin, 1000 / FPS);
+        int input = wgetch(gamewin);
         if (input == 'q') break;
 
-        DrawGround(mainscr, game->ground);
-
+        DrawGround(groundscr, game->ground);
         frog.data->movement = IntToMove(input);
-        MoveFrog(mainscr, &frog);
-        MoveCar(mainscr, cars);
+        MoveFrog(gamescr, frog);
+        MoveCar(gamescr, cars);
         //MoveLog();
         //MoveStork();
         //CheckCollision();
@@ -67,7 +72,8 @@ void GameLoop(const screen_t mainscr, const game_t *game, const config_t *config
         long gametime = GetTime() - starttime;
 
         if (frog.data->posy == 0) {
-            ShowFinish(mainscr, config, gametime);
+            ClearScreenT(mainscr, GAME_TITLE);
+            ShowFinish(gamescr, config, gametime);
             break;
         }
 
@@ -75,5 +81,6 @@ void GameLoop(const screen_t mainscr, const game_t *game, const config_t *config
                   gametime / 1000 / 60,
                   (gametime / 1000) % 60,
                   gametime % 1000);
+        wrefresh(mainwin);
     }
 }

@@ -1,7 +1,7 @@
 #include "window.h"
 
 #define MIN_WIDTH 50
-#define MIN_HEIGHT 20
+#define MIN_HEIGHT 30
 
 #define COUNTDOWN_TIME  500
 
@@ -21,13 +21,19 @@ game_screen_t Start(const config_t *config) {
     int width = second > MIN_WIDTH && second < maxwidth ? second : MIN_WIDTH;
 
     //create main screen
-    WINDOW *win = newwin(height, width, 0, 0);
-    keypad(win, TRUE);
+    WINDOW *mainwin = newwin(height, width, 0, 0);
     int colwin = 2;
-    wbkgd(win, COLOR_PAIR(colwin));
-    box(win, 0, 0);
-    mvwprintw(win, 0, width / 2 - 5, GAME_TITLE);
-    wrefresh(win);
+    wbkgd(mainwin, COLOR_PAIR(colwin));
+    box(mainwin, 0, 0);
+    mvwprintw(mainwin, 0, width / 2 - 5, GAME_TITLE);
+    wrefresh(mainwin);
+
+    //create ground screen
+    WINDOW *groundwin = subwin(mainwin, height - 2, width - 2, 1, 1);
+
+    //create game screen
+    WINDOW *gamewin = subwin(mainwin, height - 2, width - 2, 1, 1);
+    keypad(gamewin, TRUE);
 
     //create status screen
     WINDOW *status = newwin(3, width, height, 0);
@@ -39,7 +45,12 @@ game_screen_t Start(const config_t *config) {
     //mvwprintw(status, 1, 27, "ARENA Y:%d X:%d MH:%d", height, width, maxheight);
     wrefresh(status);
 
-    return (game_screen_t){{win, height, width, colwin}, {status, 3, width, colstatus}};
+    return (game_screen_t){
+        {mainwin, height, width, colwin},
+        {groundwin, height - 2, width - 2, colwin},
+        {gamewin, height - 2, width - 2, colwin},
+        {status, 3, width, colstatus}
+    };
 }
 
 void ClearScreen(const screen_t screen) {
@@ -125,27 +136,26 @@ void ShowStatus(const screen_t screen) {
 
 void DrawGround(const screen_t screen, const ground_et *ground) {
     WINDOW *win = screen.win;
-    //GROUND TYPE DEBUG
-    // for(int i = 0; i < screen.height - 2; i++)
-    //     mvwprintw(win, screen.height - i - 2, 0, "%d", ground[i]);
+    const int width = screen.width, height = screen.height;
 
-    int width = screen.width - 2, height = screen.height - 2;
-    char line[width];
-    for (int i = 0; i < width; i++) {
-        line[i] = ' ';
-    }
-    line[width] = '\0';
     for (int i = 0; i < height; i++) {
         wattron(win, COLOR_PAIR(ground[i] + 10));
-        mvwprintw(win, height - i, 1, "%s", line);
+        mvwhline(win, height - i - 1, 0, ' ', width);
         wattroff(win, COLOR_PAIR(ground[i] + 10));
-        wrefresh(win);
     }
+    //GROUND TYPE DEBUG
+    // for (int i = 0; i < screen.height; i++) {
+    //     if (i % 2 == 1)
+    //         wattron(win, COLOR_PAIR(1));
+    //     mvwprintw(win, screen.height - i - 1, 0, "%d", ground[i]);
+    //     if (i % 2 == 1)
+    //         wattroff(win, COLOR_PAIR(1));
+    // }
+    wrefresh(win);
 }
 
 void ShowFinish(const screen_t screen, const config_t *config, const long time) {
     WINDOW *win = screen.win;
-    ClearScreenT(screen, GAME_TITLE);
 
     mvwprintw(win, screen.height / 3, screen.width / 2 - 6, "You win");
     mvwprintw(win, screen.height / 3 + 1, screen.width / 2 - 10, "Your score: %02ld:%02ld.%02ld",
@@ -158,7 +168,7 @@ void ShowFinish(const screen_t screen, const config_t *config, const long time) 
             SaveScore(config, time);
             break;
         }
-        if (c == 'n') {
+        if (c == 'n' || c == 'q') {
             break;
         }
     }

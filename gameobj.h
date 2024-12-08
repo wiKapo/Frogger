@@ -29,7 +29,7 @@ typedef enum {
 
 typedef struct {
     int posy;
-    int posx;
+    float posx;
     int height;
     int width;
     move_et movement;
@@ -37,7 +37,8 @@ typedef struct {
 } data_t;
 
 typedef struct {
-    data_t* data;
+    data_t *data;
+    int amount;
     int colors;
     char *text;
     type_et type;
@@ -45,11 +46,11 @@ typedef struct {
 
 typedef struct {
     object_t frog;
-    object_t *cars;
-    object_t *log;
+    object_t car;
+    object_t log;
     object_t stork;
     object_t *obstacle;
-    ground_et* ground;
+    ground_et *ground;
 } game_t;
 
 #endif //GAMEOBJ_H

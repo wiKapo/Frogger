@@ -6,11 +6,19 @@
 #ifndef GAME_H
 #define GAME_H
 
+typedef enum {
+    EXIT = 0,
+    TUTORIAL = 1,
+    NORMAL = 2,
+    SETTINGS = 90,
+    LEADERBOARD = 91,
+} game_state_et;
+
 game_t *StartGame(const config_t *config, game_screen_t game_screen, int type);
 
-void MoveFrog(screen_t screen, const object_t *frog);
+void MoveFrog(screen_t screen, object_t frog);
 
-void MoveCar(screen_t screen, const object_t *car);
+void MoveCar(screen_t screen, object_t car);
 
 move_et IntToMove(int input);
 
